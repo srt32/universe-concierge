@@ -95,7 +95,11 @@ function canonicalSourceError(item, label) {
   }
   try {
     const sourceUrl = new URL(item.sourceUrl);
-    if (sourceUrl.hostname !== CANONICAL_SOURCE_HOST) {
+    if (
+      sourceUrl.protocol !== "https:" ||
+      sourceUrl.hostname !== CANONICAL_SOURCE_HOST ||
+      sourceUrl.pathname !== "/api/session"
+    ) {
       throw new Error("unsupported host");
     }
     const sourceId = sourceUrl.searchParams.get("id");
@@ -429,6 +433,17 @@ export function validateItineraryDocument(plan, options = {}) {
       ),
     );
   }
+  if (
+    CANONICAL_SOURCES.has(plan.metadata?.source) &&
+    plan.metadata.sourceUrl !== SOURCE_METADATA_URLS[plan.metadata.source]
+  ) {
+    documentErrors.push(
+      documentIssue(
+        "/metadata/sourceUrl",
+        "the URL must match the selected source endpoint.",
+      ),
+    );
+  }
   if (!validCalendarDate(plan.date)) {
     documentErrors.push(
       documentIssue("/date", "a real YYYY-MM-DD calendar date is required."),
@@ -482,6 +497,17 @@ export function validateItineraryDocument(plan, options = {}) {
       documentIssue("/items", "at least one itinerary item is required."),
     );
   }
+  if (
+    plan.items?.some((item) => item?.type === "session") &&
+    !Array.isArray(options.catalogSessions)
+  ) {
+    documentErrors.push(
+      issue(
+        "catalog_verification_required",
+        "Session items require verification against the selected public catalog.",
+      ),
+    );
+  }
 
   const computed = validateItinerary(plan.items, {
     requestedBreak: plan.requestedBreak,
@@ -514,3 +540,4 @@ export function validateItineraryDocument(plan, options = {}) {
     errors: [...documentErrors, ...computed.errors],
   };
 }
+import { SOURCE_METADATA_URLS } from "../data/sources.js";

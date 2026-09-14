@@ -50,7 +50,8 @@ function itineraryDocument(overrides = {}) {
     requestedBreak,
     metadata: {
       source: "embedded-snapshot",
-      sourceUrl: "https://github.com/srt32/universe-concierge",
+      sourceUrl:
+        "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
       retrievedAt: "2026-09-14T17:00:00.000Z",
       fallback: true,
     },
@@ -227,7 +228,8 @@ test("rejects inconsistent fallback and session-source metadata", () => {
     itineraryDocument({
       metadata: {
         source: "embedded-snapshot",
-        sourceUrl: "https://github.com/srt32/universe-concierge",
+        sourceUrl:
+          "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
         retrievedAt: "2026-09-14T17:00:00.000Z",
         fallback: false,
       },
@@ -254,5 +256,34 @@ test("rejects inconsistent fallback and session-source metadata", () => {
   assert.equal(mismatchedSource.valid, false);
   assert.ok(
     mismatchedSource.errors.some(({ code }) => code === "session_source_mismatch"),
+  );
+});
+
+test("rejects source metadata that does not match the selected adapter", () => {
+  const result = validateItineraryDocument(
+    itineraryDocument({
+      metadata: {
+        source: "embedded-snapshot",
+        sourceUrl: "https://attacker.example/sessions.json",
+        retrievedAt: "2026-09-14T17:00:00.000Z",
+        fallback: true,
+      },
+    }),
+  );
+
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(({ message }) =>
+      message.includes("selected source endpoint"),
+    ),
+  );
+});
+
+test("requires a selected catalog to validate a sourced document", () => {
+  const result = validateItineraryDocument(itineraryDocument());
+
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(({ code }) => code === "catalog_verification_required"),
   );
 });

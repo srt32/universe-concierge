@@ -36,6 +36,23 @@ test("discovers the public session widget from loadPage data", () => {
   );
 });
 
+test("rejects a discovered RainFocus host outside the public allow-list", () => {
+  assert.throws(
+    () =>
+      discoverCatalogConfiguration({
+        data: {
+          responseCode: "0",
+          eventsUrl: "https://169.254.169.254/latest/meta-data",
+          widgetConf: {
+            apiProfileToken: "profile",
+            widgetToken: "widget",
+          },
+        },
+      }),
+    /expected public events host/i,
+  );
+});
+
 test("normalizes RainFocus local times, tracks, speakers, and canonical source", () => {
   const session = normalizeRainFocusSession(
     {

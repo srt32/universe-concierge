@@ -65,6 +65,7 @@ test("get_session returns a canonical session or a typed not-found error", async
 
 test("validate_itinerary returns deterministic validation details", async () => {
   const result = await tools.get("validate_itinerary").handler({
+    date: "2026-10-29",
     items: [
       {
         id: "universe26-agentic-systems",
@@ -84,6 +85,7 @@ test("validate_itinerary returns deterministic validation details", async () => 
 
 test("validate_itinerary rejects sessions that are absent from the catalog", async () => {
   const result = await tools.get("validate_itinerary").handler({
+    date: "2026-10-29",
     items: [
       {
         id: "invented-session",
@@ -100,4 +102,25 @@ test("validate_itinerary rejects sessions that are absent from the catalog", asy
 
   assert.equal(result.valid, false);
   assert.equal(result.errors[0].code, "unknown_session");
+});
+
+test("validate_itinerary rejects canonical sessions from another event day", async () => {
+  const result = await tools.get("validate_itinerary").handler({
+    date: "2026-10-28",
+    items: [
+      {
+        id: "universe26-agentic-systems",
+        type: "session",
+        title: "Building agentic systems",
+        start: "2026-10-29T13:30:00-07:00",
+        end: "2026-10-29T14:00:00-07:00",
+        source: "embedded-snapshot",
+        sourceUrl:
+          "https://events.githubuniverse.com/api/session?id=universe26-agentic-systems",
+      },
+    ],
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "wrong_event_date"));
 });

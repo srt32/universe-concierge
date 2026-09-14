@@ -3,13 +3,13 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { validateItineraryDocument } from "../plugins/universe-concierge/src/itinerary/validate.js";
+import { validateItineraryDocumentAgainstCatalog } from "../plugins/universe-concierge/src/itinerary/validate-document.js";
 
 const filePath = resolve(process.argv[2] ?? "site/itinerary.json");
 
 async function main() {
   const plan = JSON.parse(await readFile(filePath, "utf8"));
-  const result = validateItineraryDocument(plan);
+  const result = await validateItineraryDocumentAgainstCatalog(plan);
 
   if (!result.valid) {
     console.error(

@@ -1,11 +1,21 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
 import { validateItinerary } from "../plugins/universe-concierge/src/itinerary/validate.js";
+
+const embeddedCatalog = JSON.parse(
+  await readFile(
+    new URL(
+      "../plugins/universe-concierge/data/sessions.json",
+      import.meta.url,
+    ),
+    "utf8",
+  ),
+);
 
 const script = new URL("../scripts/validate-itinerary.js", import.meta.url);
 const hookScript = new URL(
@@ -23,6 +33,21 @@ function source(id) {
   };
 }
 
+function canonicalSession(id) {
+  const session =
+    embeddedCatalog.sessions.find((candidate) => candidate.id === id) ??
+    embeddedCatalog.sessions[0];
+  return {
+    id: session.id,
+    type: "session",
+    title: session.title,
+    start: session.start,
+    end: session.end,
+    source: "embedded-snapshot",
+    sourceUrl: session.sourceUrl,
+  };
+}
+
 async function run(items, requestedBreak) {
   const directory = await mkdtemp(join(tmpdir(), "universe-hook-"));
   const file = join(directory, "itinerary.json");
@@ -35,12 +60,13 @@ async function run(items, requestedBreak) {
         name: "GitHub Universe 2026",
         timezone: "America/Los_Angeles",
       },
-      date: "2026-10-29",
+      date: items[0]?.start?.slice(0, 10) ?? "2026-10-28",
       attendee: { name: "Agent builder", interests: ["Copilot"] },
       requestedBreak: requiredBreak,
       metadata: {
         source: "embedded-snapshot",
-        sourceUrl: "https://github.com/srt32/universe-concierge",
+        sourceUrl:
+          "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
         retrievedAt: "2026-09-14T17:00:00.000Z",
         fallback: true,
       },
@@ -64,20 +90,13 @@ function runWriteScopeHook(cwd, toolName, toolArgs) {
 test("the file validator accepts a sourced plan with its requested break", async () => {
   const result = await run(
     [
-      {
-        id: "session-1",
-        type: "session",
-        title: "A session",
-        start: "2026-10-29T09:00:00-07:00",
-        end: "2026-10-29T10:00:00-07:00",
-        ...source("session-1"),
-      },
+      canonicalSession("1786370222106001jLNQ"),
       {
         id: "break-1",
         type: "break",
         title: "Recharge",
-        start: "2026-10-29T12:00:00-07:00",
-        end: "2026-10-29T13:00:00-07:00",
+        start: "2026-10-28T12:00:00-07:00",
+        end: "2026-10-28T13:00:00-07:00",
       },
     ],
     { start: "12:00", end: "13:00" },
@@ -111,6 +130,30 @@ test("the file validator exits nonzero for overlapping sessions", async () => {
   const output = JSON.parse(result.stderr);
   assert.equal(output.valid, false);
   assert.equal(output.errors[0].code, "overlap");
+});
+
+test("the file validator rejects a fabricated canonical-looking session", async () => {
+  const result = await run([
+    {
+      id: "invented-session",
+      type: "session",
+      title: "Invented session",
+      start: "2026-10-28T09:00:00-07:00",
+      end: "2026-10-28T10:00:00-07:00",
+      ...source("invented-session"),
+    },
+    {
+      id: "break-1",
+      type: "break",
+      title: "Recharge",
+      start: "2026-10-28T12:00:00-07:00",
+      end: "2026-10-28T13:00:00-07:00",
+    },
+  ]);
+
+  assert.equal(result.status, 1);
+  const output = JSON.parse(result.stderr);
+  assert.ok(output.errors.some(({ code }) => code === "unknown_session"));
 });
 
 test("the post-tool hook replaces an invalid edit result with a failure", async () => {

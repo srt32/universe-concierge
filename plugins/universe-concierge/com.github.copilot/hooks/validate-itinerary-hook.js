@@ -3,7 +3,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { validateItineraryDocument } from "../../src/itinerary/validate.js";
+import { validateItineraryDocumentAgainstCatalog } from "../../src/itinerary/validate-document.js";
 
 const itineraryPath = resolve(
   process.env.UNIVERSE_ITINERARY_PATH ?? "site/itinerary.json",
@@ -29,7 +29,7 @@ function rejection(message) {
 async function validationFailure() {
   try {
     const plan = JSON.parse(await readFile(itineraryPath, "utf8"));
-    const result = validateItineraryDocument(plan);
+    const result = await validateItineraryDocumentAgainstCatalog(plan);
     if (!result.valid) {
       return `Rejected itinerary: ${result.errors
         .map(({ code, message }) => `${code}: ${message}`)

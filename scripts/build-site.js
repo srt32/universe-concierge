@@ -2,7 +2,7 @@ import { cp, mkdir, readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { validateItineraryDocument } from "../plugins/universe-concierge/src/itinerary/validate.js";
+import { validateItineraryDocumentAgainstCatalog } from "../plugins/universe-concierge/src/itinerary/validate-document.js";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const siteDirectory = resolve(root, "site");
@@ -11,7 +11,7 @@ const itineraryPath = resolve(siteDirectory, "itinerary.json");
 
 async function main() {
   const plan = JSON.parse(await readFile(itineraryPath, "utf8"));
-  const result = validateItineraryDocument(plan);
+  const result = await validateItineraryDocumentAgainstCatalog(plan);
   if (!result.valid) {
     throw new Error(
       `Refusing to build an invalid itinerary:\n${result.errors

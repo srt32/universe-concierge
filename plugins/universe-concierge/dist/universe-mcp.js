@@ -21467,7 +21467,14 @@ var SessionNotFoundError = class extends UniverseConciergeError {
 import { readFile } from "node:fs/promises";
 var RAINFOCUS_CATALOG_URL = "https://reg.githubuniverse.com/flow/github/universe26/attendee-portal/page/sessioncatalog";
 var RAINFOCUS_PAGE_DATA_URL = "https://reg.githubuniverse.com/flow/loadPage?pageUri=sessioncatalog&workflowApiToken=github.universe26.attendee-portal";
+var RAINFOCUS_EVENTS_HOST = "events.githubuniverse.com";
 var HOSTED_SNAPSHOT_URL = "https://srt32.github.io/universe-concierge/data/sessions.json";
+var EMBEDDED_SNAPSHOT_SOURCE_URL = "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json";
+var SOURCE_METADATA_URLS = Object.freeze({
+  "rainfocus-public-page": RAINFOCUS_CATALOG_URL,
+  "hosted-snapshot": HOSTED_SNAPSHOT_URL,
+  "embedded-snapshot": EMBEDDED_SNAPSHOT_SOURCE_URL
+});
 var EMBEDDED_SNAPSHOT_URLS = [
   new URL("../data/sessions.json", import.meta.url),
   new URL("../../data/sessions.json", import.meta.url)
@@ -21494,6 +21501,22 @@ var PUBLIC_VENUE_TIPS = [
 ];
 function canonicalTimeZone(value) {
   return value === "US/Pacific" ? "America/Los_Angeles" : value;
+}
+function validatedEventsHost(value) {
+  try {
+    const url = new URL(
+      String(value).includes("://") ? String(value) : `https://${value}`
+    );
+    if (url.protocol !== "https:" || url.hostname !== RAINFOCUS_EVENTS_HOST || url.port || url.username || url.password || url.pathname !== "" && url.pathname !== "/" || url.search || url.hash) {
+      throw new Error("unexpected endpoint");
+    }
+    return url.hostname;
+  } catch {
+    throw new SourceUnavailableError(
+      "rainfocus-page-data",
+      `the public page did not expose the expected public events host ${RAINFOCUS_EVENTS_HOST}`
+    );
+  }
 }
 function offsetIso(time3) {
   const utcValue = time3?.utcStartTime;
@@ -21579,8 +21602,8 @@ function assertRainFocusSuccess(payload, source) {
 function discoverCatalogConfiguration(pagePayload) {
   assertRainFocusSuccess(pagePayload, "rainfocus-page-data");
   const configuration = pagePayload.data?.widgetConf;
-  const eventsHost = pagePayload.data?.eventsUrl;
-  if (!configuration?.apiProfileToken || !configuration?.widgetToken || !eventsHost) {
+  const eventsUrl = pagePayload.data?.eventsUrl;
+  if (!configuration?.apiProfileToken || !configuration?.widgetToken || !eventsUrl) {
     throw new SourceUnavailableError(
       "rainfocus-page-data",
       "the public page did not expose its catalog widget configuration"
@@ -21590,7 +21613,7 @@ function discoverCatalogConfiguration(pagePayload) {
     apiProfileToken: configuration.apiProfileToken,
     widgetToken: configuration.widgetToken,
     workflowId: configuration.workflowId,
-    eventsHost,
+    eventsHost: validatedEventsHost(eventsUrl),
     timeZone: canonicalTimeZone(
       pagePayload.data?.timeZone ?? "America/Los_Angeles"
     )
@@ -21665,7 +21688,7 @@ var hostedSnapshotAdapter = {
 };
 var embeddedSnapshotAdapter = {
   name: "embedded-snapshot",
-  sourceUrl: "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
+  sourceUrl: EMBEDDED_SNAPSHOT_SOURCE_URL,
   async load() {
     const failures = [];
     for (const candidate of EMBEDDED_SNAPSHOT_URLS) {
@@ -21869,7 +21892,7 @@ function canonicalSourceError(item, label) {
   }
   try {
     const sourceUrl = new URL(item.sourceUrl);
-    if (sourceUrl.hostname !== CANONICAL_SOURCE_HOST) {
+    if (sourceUrl.protocol !== "https:" || sourceUrl.hostname !== CANONICAL_SOURCE_HOST || sourceUrl.pathname !== "/api/session") {
       throw new Error("unsupported host");
     }
     const sourceId = sourceUrl.searchParams.get("id");
@@ -22143,7 +22166,7 @@ function validateItinerary(items, options = {}) {
 // plugins/universe-concierge/src/tools.js
 var itineraryItemSchema = external_exports.object({
   id: external_exports.string(),
-  type: external_exports.enum(["session", "break", "travel", "note"]).default("session"),
+  type: external_exports.enum(["session", "break", "travel", "note"]),
   title: external_exports.string(),
   start: external_exports.string(),
   end: external_exports.string(),
@@ -22240,15 +22263,19 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
       tool(
         "Validate that an itinerary has no overlaps, every session is canonical and sourced, and the requested break is preserved.",
         {
+          date: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          timezone: external_exports.literal("America/Los_Angeles").default("America/Los_Angeles"),
           items: external_exports.array(itineraryItemSchema),
           requestedBreak: requestedBreakSchema
         },
-        async ({ items, requestedBreak }) => {
+        async ({ date: date3, timezone = "America/Los_Angeles", items, requestedBreak }) => {
           const catalog = await loadCatalog();
           return validateItinerary(items, {
             requestedBreak,
             catalogSessions: catalog.sessions,
-            catalogMetadata: catalog.metadata
+            catalogMetadata: catalog.metadata,
+            planDate: date3,
+            timeZone: timezone
           });
         }
       )

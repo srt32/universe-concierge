@@ -6,7 +6,7 @@ import { validateItinerary } from "./itinerary/validate.js";
 
 const itineraryItemSchema = z.object({
   id: z.string(),
-  type: z.enum(["session", "break", "travel", "note"]).default("session"),
+  type: z.enum(["session", "break", "travel", "note"]),
   title: z.string(),
   start: z.string(),
   end: z.string(),
@@ -115,15 +115,19 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
       tool(
         "Validate that an itinerary has no overlaps, every session is canonical and sourced, and the requested break is preserved.",
         {
+          date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          timezone: z.literal("America/Los_Angeles").default("America/Los_Angeles"),
           items: z.array(itineraryItemSchema),
           requestedBreak: requestedBreakSchema,
         },
-        async ({ items, requestedBreak }) => {
+        async ({ date, timezone = "America/Los_Angeles", items, requestedBreak }) => {
           const catalog = await loadCatalog();
           return validateItinerary(items, {
             requestedBreak,
             catalogSessions: catalog.sessions,
             catalogMetadata: catalog.metadata,
+            planDate: date,
+            timeZone: timezone,
           });
         },
       ),

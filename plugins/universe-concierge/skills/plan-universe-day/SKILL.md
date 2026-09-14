@@ -35,8 +35,9 @@ access. Use only the public data exposed by the `universe` MCP server.
    must cover the full requested interval.
 6. Build items in chronological order. Every session item must copy its
    canonical `id`, `source`, and `sourceUrl` from MCP results.
-7. Call `validate_itinerary` with the complete item array and requested break.
-   Resolve every validation error before writing the file.
+7. Call `validate_itinerary` with the event date, `America/Los_Angeles`
+   timezone, complete item array, and requested break. Resolve every validation
+   error before writing the file.
 8. Update only `site/itinerary.json` using
    `schemas/itinerary.schema.json`. Copy the validator result into the
    top-level `validation` field and the catalog source metadata into

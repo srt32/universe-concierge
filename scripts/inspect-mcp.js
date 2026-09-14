@@ -66,6 +66,8 @@ async function inspect() {
     await client.callTool({
       name: "validate_itinerary",
       arguments: {
+        date: firstSession.start.slice(0, 10),
+        timezone: "America/Los_Angeles",
         items: [
           {
             id: detail.session.id,

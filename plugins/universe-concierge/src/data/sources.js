@@ -8,8 +8,16 @@ export const RAINFOCUS_PAGE_DATA_URL =
   "https://reg.githubuniverse.com/flow/loadPage?pageUri=sessioncatalog&workflowApiToken=github.universe26.attendee-portal";
 export const RAINFOCUS_PUBLIC_API_PROFILE =
   "AjWe02u25IuBR01J4a6OsQvAsdXwPSjr";
+export const RAINFOCUS_EVENTS_HOST = "events.githubuniverse.com";
 export const HOSTED_SNAPSHOT_URL =
   "https://srt32.github.io/universe-concierge/data/sessions.json";
+export const EMBEDDED_SNAPSHOT_SOURCE_URL =
+  "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json";
+export const SOURCE_METADATA_URLS = Object.freeze({
+  "rainfocus-public-page": RAINFOCUS_CATALOG_URL,
+  "hosted-snapshot": HOSTED_SNAPSHOT_URL,
+  "embedded-snapshot": EMBEDDED_SNAPSHOT_SOURCE_URL,
+});
 export const EMBEDDED_SNAPSHOT_URLS = [
   new URL("../data/sessions.json", import.meta.url),
   new URL("../../data/sessions.json", import.meta.url),
@@ -40,6 +48,32 @@ export const PUBLIC_VENUE_TIPS = [
 
 function canonicalTimeZone(value) {
   return value === "US/Pacific" ? "America/Los_Angeles" : value;
+}
+
+function validatedEventsHost(value) {
+  try {
+    const url = new URL(
+      String(value).includes("://") ? String(value) : `https://${value}`,
+    );
+    if (
+      url.protocol !== "https:" ||
+      url.hostname !== RAINFOCUS_EVENTS_HOST ||
+      url.port ||
+      url.username ||
+      url.password ||
+      (url.pathname !== "" && url.pathname !== "/") ||
+      url.search ||
+      url.hash
+    ) {
+      throw new Error("unexpected endpoint");
+    }
+    return url.hostname;
+  } catch {
+    throw new SourceUnavailableError(
+      "rainfocus-page-data",
+      `the public page did not expose the expected public events host ${RAINFOCUS_EVENTS_HOST}`,
+    );
+  }
 }
 
 function offsetIso(time) {
@@ -139,11 +173,11 @@ function assertRainFocusSuccess(payload, source) {
 export function discoverCatalogConfiguration(pagePayload) {
   assertRainFocusSuccess(pagePayload, "rainfocus-page-data");
   const configuration = pagePayload.data?.widgetConf;
-  const eventsHost = pagePayload.data?.eventsUrl;
+  const eventsUrl = pagePayload.data?.eventsUrl;
   if (
     !configuration?.apiProfileToken ||
     !configuration?.widgetToken ||
-    !eventsHost
+    !eventsUrl
   ) {
     throw new SourceUnavailableError(
       "rainfocus-page-data",
@@ -154,7 +188,7 @@ export function discoverCatalogConfiguration(pagePayload) {
     apiProfileToken: configuration.apiProfileToken,
     widgetToken: configuration.widgetToken,
     workflowId: configuration.workflowId,
-    eventsHost,
+    eventsHost: validatedEventsHost(eventsUrl),
     timeZone: canonicalTimeZone(
       pagePayload.data?.timeZone ?? "America/Los_Angeles",
     ),
@@ -243,8 +277,7 @@ export const hostedSnapshotAdapter = {
 
 export const embeddedSnapshotAdapter = {
   name: "embedded-snapshot",
-  sourceUrl:
-    "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
+  sourceUrl: EMBEDDED_SNAPSHOT_SOURCE_URL,
   async load() {
     const failures = [];
     for (const candidate of EMBEDDED_SNAPSHOT_URLS) {
