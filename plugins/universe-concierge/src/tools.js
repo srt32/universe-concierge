@@ -118,8 +118,14 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
           items: z.array(itineraryItemSchema),
           requestedBreak: requestedBreakSchema,
         },
-        async ({ items, requestedBreak }) =>
-          validateItinerary(items, { requestedBreak }),
+        async ({ items, requestedBreak }) => {
+          const catalog = await loadCatalog();
+          return validateItinerary(items, {
+            requestedBreak,
+            catalogSessions: catalog.sessions,
+            catalogMetadata: catalog.metadata,
+          });
+        },
       ),
     ],
   ]);

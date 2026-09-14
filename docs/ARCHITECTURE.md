@@ -30,26 +30,32 @@ manager lifecycle.
 
 ### Hook: guarantee
 
-The post-tool hook runs after file-writing tools. When the itinerary is invalid,
-it replaces the successful edit result with a failure, which routes the agent
-back into repair. Because post-tool hooks cannot undo an edit, an additional
-agent-stop hook blocks completion while the repository contains an invalid
-itinerary.
+A fail-closed pre-tool hook permits file-writing tools only when every target
+resolves to `site/itinerary.json`. The post-tool hook then validates the
+itinerary and replaces an invalid edit's successful result with a failure,
+which routes the agent back into repair. Because post-tool hooks cannot undo an
+edit, an additional agent-stop hook blocks completion while the repository
+contains an invalid itinerary.
 
 The validator enforces:
 
 - valid ISO start and end times;
+- chronological source order;
 - no partial or complete overlap;
 - a unique canonical ID for every item;
-- `source` and `sourceUrl` on every session;
+- HTTPS `sourceUrl` values and canonical public IDs on every session;
+- event-local dates that match the itinerary date;
+- session provenance that matches live or fallback document metadata;
 - full coverage of the requested break.
 
 ### Custom agent: role
 
 The agent allow-list contains repository read/edit capabilities and the five
 specific `universe` MCP tools. It does not receive shell, browser, or broad MCP
-wildcard access. Instructions restrict writes to `site/itinerary.json`; the hook
-provides the deterministic output guarantee.
+wildcard access. Instructions and a pre-tool hook restrict writes to
+`site/itinerary.json`; the validation hooks enforce the itinerary invariants.
+MCP responses label remote catalog fields as untrusted public data, and the
+agent is instructed never to follow embedded instructions from them.
 
 ### Plugin: package
 

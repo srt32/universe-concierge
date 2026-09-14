@@ -33,8 +33,9 @@ npm test
 ```
 
 The suite covers source ordering and forced fallback, RainFocus normalization,
-all MCP tool handlers, itinerary invariants, the CLI validator, post-tool
-rejection, and agent-stop blocking.
+all MCP tool handlers, itinerary invariants, MCP trust labeling, the CLI
+validator, pre-tool write-scope enforcement, post-tool rejection, and agent-stop
+blocking.
 
 Run only the core contract tests:
 
@@ -223,9 +224,13 @@ node --test test/hook.test.js
 
 Expected:
 
+- the pre-tool hook allows `site/itinerary.json` and denies other write targets;
 - the post-tool hook exits `0` with a `modifiedResult.resultType` of `failure`;
 - the failure tells the agent which items overlap;
-- the agent-stop hook returns `{"decision":"block", ...}`.
+- the agent-stop hook returns `{"decision":"block", ...}`;
+- full-document validation also rejects out-of-order or cross-day items,
+  non-HTTPS source URLs, source mismatches, fallback data labeled live, and
+  breaks that do not cover the requested event-local time.
 
 For an interactive proof, temporarily paste the invalid fixture over
 `site/itinerary.json` through the concierge agent. The edit result must become a
@@ -340,10 +345,10 @@ copilot plugin list
 ```
 
 Restart the interactive CLI, then check `/plugin list`, `/skills list`, and
-`/mcp` again. A direct development install can be refreshed with:
+`/mcp` again. To bypass marketplace caching during development, launch with:
 
 ```bash
-copilot plugin install ./plugins/universe-concierge
+copilot --plugin-dir ./plugins/universe-concierge
 ```
 
 ### The hook reports invalid JSON

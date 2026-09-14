@@ -38,6 +38,10 @@ export const PUBLIC_VENUE_TIPS = [
   },
 ];
 
+function canonicalTimeZone(value) {
+  return value === "US/Pacific" ? "America/Los_Angeles" : value;
+}
+
 function offsetIso(time) {
   const utcValue = time?.utcStartTime;
   if (!time?.date || !time?.startTime || !utcValue) {
@@ -151,7 +155,9 @@ export function discoverCatalogConfiguration(pagePayload) {
     widgetToken: configuration.widgetToken,
     workflowId: configuration.workflowId,
     eventsHost,
-    timeZone: pagePayload.data?.timeZone ?? "US/Pacific",
+    timeZone: canonicalTimeZone(
+      pagePayload.data?.timeZone ?? "America/Los_Angeles",
+    ),
   };
 }
 

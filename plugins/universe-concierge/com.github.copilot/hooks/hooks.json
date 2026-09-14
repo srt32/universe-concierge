@@ -1,6 +1,16 @@
 {
   "version": 1,
   "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "create|edit|str_replace_editor|apply_patch",
+        "bash": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/enforce-write-scope-hook.js\"",
+        "powershell": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/enforce-write-scope-hook.js\"",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
     "postToolUse": [
       {
         "type": "command",

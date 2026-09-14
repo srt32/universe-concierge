@@ -1,21 +1,61 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { validateItinerary } from "../plugins/universe-concierge/src/itinerary/validate.js";
-
-const source = {
-  source: "embedded-snapshot",
-  sourceUrl: "https://github.com/srt32/universe-concierge",
-};
+import {
+  validateItinerary,
+  validateItineraryDocument,
+} from "../plugins/universe-concierge/src/itinerary/validate.js";
 
 function session(overrides = {}) {
-  return {
+  const value = {
     id: "universe26-opening-keynote",
     type: "session",
     title: "Opening keynote",
     start: "2026-10-29T09:00:00-07:00",
     end: "2026-10-29T10:00:00-07:00",
-    ...source,
+    source: "embedded-snapshot",
+    ...overrides,
+  };
+  value.sourceUrl ??=
+    `https://events.githubuniverse.com/api/session?id=${value.id}`;
+  return value;
+}
+
+function itineraryDocument(overrides = {}) {
+  const items = overrides.items ?? [
+    session(),
+    {
+      id: "break-lunch",
+      type: "break",
+      title: "Lunch break",
+      start: "2026-10-29T12:00:00-07:00",
+      end: "2026-10-29T13:00:00-07:00",
+    },
+  ];
+  const requestedBreak = overrides.requestedBreak ?? {
+    start: "12:00",
+    end: "13:00",
+  };
+  return {
+    event: {
+      id: "github-universe-2026",
+      name: "GitHub Universe 2026",
+      timezone: "America/Los_Angeles",
+    },
+    date: "2026-10-29",
+    attendee: {
+      name: "Agent builder",
+      interests: ["Copilot"],
+    },
+    requestedBreak,
+    metadata: {
+      source: "embedded-snapshot",
+      sourceUrl: "https://github.com/srt32/universe-concierge",
+      retrievedAt: "2026-09-14T17:00:00.000Z",
+      fallback: true,
+    },
+    items,
+    validation: validateItinerary(items, { requestedBreak }),
     ...overrides,
   };
 }
@@ -75,6 +115,18 @@ test("rejects sessions without canonical IDs and source metadata", () => {
   );
 });
 
+test("rejects session sources whose canonical URL does not carry the session ID", () => {
+  const result = validateItinerary([
+    session({
+      id: "invented-session",
+      sourceUrl: "https://example.invalid/fake",
+    }),
+  ]);
+
+  assert.equal(result.valid, false);
+  assert.equal(result.errors[0].code, "invalid_canonical_source");
+});
+
 test("rejects an itinerary that does not preserve the requested break", () => {
   const result = validateItinerary([session()], {
     requestedBreak: { start: "12:00", end: "13:00" },
@@ -82,4 +134,125 @@ test("rejects an itinerary that does not preserve the requested break", () => {
 
   assert.equal(result.valid, false);
   assert.equal(result.errors[0].code, "requested_break_missing");
+});
+
+test("evaluates requested breaks in the event timezone", () => {
+  const result = validateItinerary(
+    [
+      {
+        id: "break-noon-eastern",
+        type: "break",
+        title: "Noon in New York",
+        start: "2026-10-29T12:00:00-04:00",
+        end: "2026-10-29T13:00:00-04:00",
+      },
+    ],
+    { requestedBreak: { start: "12:00", end: "13:00" } },
+  );
+
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(({ code }) => code === "requested_break_missing"),
+  );
+});
+
+test("rejects items that are not ordered chronologically", () => {
+  const result = validateItinerary([
+    session({
+      id: "afternoon-session",
+      start: "2026-10-29T14:00:00-07:00",
+      end: "2026-10-29T15:00:00-07:00",
+    }),
+    session(),
+  ]);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "out_of_order"));
+});
+
+test("rejects non-HTTPS source URLs", () => {
+  const items = [
+    session(),
+    {
+      id: "travel-1",
+      type: "travel",
+      title: "Walk to the next room",
+      start: "2026-10-29T10:00:00-07:00",
+      end: "2026-10-29T10:15:00-07:00",
+      sourceUrl: "javascript:alert(document.domain)",
+    },
+    {
+      id: "break-lunch",
+      type: "break",
+      title: "Lunch break",
+      start: "2026-10-29T12:00:00-07:00",
+      end: "2026-10-29T13:00:00-07:00",
+    },
+  ];
+  const result = validateItineraryDocument(itineraryDocument({ items }));
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "invalid_source_url"));
+});
+
+test("rejects impossible itinerary dates and items from another event day", () => {
+  const impossible = validateItineraryDocument(
+    itineraryDocument({ date: "2026-02-30" }),
+  );
+  const wrongDay = validateItineraryDocument(
+    itineraryDocument({ date: "2026-10-28" }),
+  );
+
+  assert.equal(impossible.valid, false);
+  assert.ok(impossible.errors.some(({ message }) => message.startsWith("/date:")));
+  assert.equal(wrongDay.valid, false);
+  assert.ok(wrongDay.errors.some(({ code }) => code === "wrong_event_date"));
+});
+
+test("rejects calendar-invalid RFC 3339 timestamps", () => {
+  const items = [
+    session({
+      start: "2026-02-30T12:00:00-08:00",
+      end: "2026-02-30T13:00:00-08:00",
+    }),
+  ];
+  const result = validateItinerary(items);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "invalid_time"));
+});
+
+test("rejects inconsistent fallback and session-source metadata", () => {
+  const mislabeledFallback = validateItineraryDocument(
+    itineraryDocument({
+      metadata: {
+        source: "embedded-snapshot",
+        sourceUrl: "https://github.com/srt32/universe-concierge",
+        retrievedAt: "2026-09-14T17:00:00.000Z",
+        fallback: false,
+      },
+    }),
+  );
+  const mismatchedSource = validateItineraryDocument(
+    itineraryDocument({
+      metadata: {
+        source: "hosted-snapshot",
+        sourceUrl:
+          "https://srt32.github.io/universe-concierge/data/sessions.json",
+        retrievedAt: "2026-09-14T17:00:00.000Z",
+        fallback: true,
+      },
+    }),
+  );
+
+  assert.equal(mislabeledFallback.valid, false);
+  assert.ok(
+    mislabeledFallback.errors.some(({ message }) =>
+      message.includes("fallback must match"),
+    ),
+  );
+  assert.equal(mismatchedSource.valid, false);
+  assert.ok(
+    mismatchedSource.errors.some(({ code }) => code === "session_source_mismatch"),
+  );
 });

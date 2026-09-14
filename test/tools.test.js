@@ -19,7 +19,8 @@ const catalog = {
       end: "2026-10-29T14:00:00-07:00",
       topics: ["AI", "Copilot"],
       speakers: [{ name: "Octo Cat" }],
-      sourceUrl: "https://reg.githubuniverse.com/session/agentic-systems",
+      sourceUrl:
+        "https://events.githubuniverse.com/api/session?id=universe26-agentic-systems",
     },
   ],
   venueTips: [{ id: "arrive-early", title: "Arrive early", detail: "Allow time." }],
@@ -72,10 +73,31 @@ test("validate_itinerary returns deterministic validation details", async () => 
         start: "2026-10-29T13:30:00-07:00",
         end: "2026-10-29T14:00:00-07:00",
         source: "embedded-snapshot",
-        sourceUrl: "https://reg.githubuniverse.com/session/agentic-systems",
+        sourceUrl:
+          "https://events.githubuniverse.com/api/session?id=universe26-agentic-systems",
       },
     ],
   });
 
   assert.equal(result.valid, true);
+});
+
+test("validate_itinerary rejects sessions that are absent from the catalog", async () => {
+  const result = await tools.get("validate_itinerary").handler({
+    items: [
+      {
+        id: "invented-session",
+        type: "session",
+        title: "Invented session",
+        start: "2026-10-29T13:30:00-07:00",
+        end: "2026-10-29T14:00:00-07:00",
+        source: "embedded-snapshot",
+        sourceUrl:
+          "https://events.githubuniverse.com/api/session?id=invented-session",
+      },
+    ],
+  });
+
+  assert.equal(result.valid, false);
+  assert.equal(result.errors[0].code, "unknown_session");
 });

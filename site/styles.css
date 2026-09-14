@@ -23,6 +23,7 @@ html {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--body);
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
@@ -117,6 +118,8 @@ dt {
   margin: 0 0 1rem;
   color: var(--teal-dark);
   font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 h1,
@@ -341,6 +344,10 @@ dd {
   background: var(--teal-dark);
 }
 
+.source-id {
+  overflow-wrap: anywhere;
+}
+
 .source-link[hidden] {
   display: none;
 }
@@ -444,6 +451,22 @@ footer p {
 
   footer {
     display: grid;
+  }
+}
+
+@media (max-width: 480px) {
+  .route-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .strip-meta {
+    display: grid;
+    justify-content: start;
+  }
+
+  .source-link {
+    justify-self: start;
+    max-width: 100%;
   }
 }
 

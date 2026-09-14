@@ -65,6 +65,11 @@ async function validateAgentPluginFiles() {
   );
   assert(hooks.version === 1, "Copilot hooks must use version 1.");
   assert(
+    hooks.hooks?.preToolUse?.[0]?.matcher ===
+      "create|edit|str_replace_editor|apply_patch",
+    "The pre-tool hook must enforce the itinerary write scope.",
+  );
+  assert(
     hooks.hooks?.postToolUse?.[0]?.matcher ===
       "create|edit|str_replace_editor|apply_patch",
     "The post-tool hook must match the documented file-writing tools.",

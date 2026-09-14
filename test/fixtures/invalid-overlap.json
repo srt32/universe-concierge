@@ -1,4 +1,24 @@
 {
+  "event": {
+    "id": "github-universe-2026",
+    "name": "GitHub Universe 2026",
+    "timezone": "America/Los_Angeles"
+  },
+  "date": "2026-10-28",
+  "attendee": {
+    "name": "Overlap test",
+    "interests": ["Copilot"]
+  },
+  "requestedBreak": {
+    "start": "12:00",
+    "end": "13:00"
+  },
+  "metadata": {
+    "source": "embedded-snapshot",
+    "sourceUrl": "https://github.com/srt32/universe-concierge",
+    "retrievedAt": "2026-09-14T17:00:00.000Z",
+    "fallback": true
+  },
   "items": [
     {
       "id": "session-alpha",
@@ -7,7 +27,7 @@
       "start": "2026-10-28T10:00:00-07:00",
       "end": "2026-10-28T11:00:00-07:00",
       "source": "embedded-snapshot",
-      "sourceUrl": "https://github.com/srt32/universe-concierge"
+      "sourceUrl": "https://events.githubuniverse.com/api/session?id=session-alpha"
     },
     {
       "id": "session-beta",
@@ -16,7 +36,29 @@
       "start": "2026-10-28T10:30:00-07:00",
       "end": "2026-10-28T11:30:00-07:00",
       "source": "embedded-snapshot",
-      "sourceUrl": "https://github.com/srt32/universe-concierge"
+      "sourceUrl": "https://events.githubuniverse.com/api/session?id=session-beta"
+    },
+    {
+      "id": "break-lunch",
+      "type": "break",
+      "title": "Lunch break",
+      "start": "2026-10-28T12:00:00-07:00",
+      "end": "2026-10-28T13:00:00-07:00"
     }
-  ]
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      {
+        "code": "overlap",
+        "message": "The fixture intentionally contains overlapping sessions."
+      }
+    ],
+    "warnings": [],
+    "summary": {
+      "itemCount": 3,
+      "sessionCount": 2,
+      "breakCount": 1
+    }
+  }
 }

@@ -16,10 +16,11 @@
     "$schema": { "type": "string" },
     "event": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": ["id", "name", "timezone"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "minLength": 1 }
+        "name": { "type": "string", "minLength": 1 },
+        "timezone": { "const": "America/Los_Angeles" }
       },
       "additionalProperties": true
     },
@@ -61,9 +62,23 @@
         "fallback"
       ],
       "properties": {
-        "source": { "type": "string", "minLength": 1 },
-        "sourceUrl": { "type": "string", "format": "uri" },
-        "retrievedAt": { "type": "string", "format": "date-time" },
+        "source": {
+          "enum": [
+            "rainfocus-public-page",
+            "hosted-snapshot",
+            "embedded-snapshot"
+          ]
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
         "fallback": { "type": "boolean" },
         "failures": {
           "type": "array",
@@ -78,7 +93,27 @@
           }
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": { "const": "rainfocus-public-page" }
+            },
+            "required": ["source"]
+          },
+          "then": {
+            "properties": {
+              "fallback": { "const": false }
+            }
+          },
+          "else": {
+            "properties": {
+              "fallback": { "const": true }
+            }
+          }
+        }
+      ]
     },
     "items": {
       "type": "array",
@@ -109,12 +144,24 @@
         "title": { "type": "string", "minLength": 1 },
         "description": { "type": "string" },
         "note": { "type": "string" },
-        "start": { "type": "string", "format": "date-time" },
-        "end": { "type": "string", "format": "date-time" },
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
         "room": { "type": "string" },
         "format": { "type": "string" },
         "source": { "type": "string" },
-        "sourceUrl": { "type": "string", "format": "uri" }
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        }
       },
       "additionalProperties": true
     }

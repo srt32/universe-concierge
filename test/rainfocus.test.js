@@ -31,7 +31,7 @@ test("discovers the public session widget from loadPage data", () => {
       widgetToken: "widget",
       workflowId: "workflow",
       eventsHost: "events.githubuniverse.com",
-      timeZone: "US/Pacific",
+      timeZone: "America/Los_Angeles",
     },
   );
 });

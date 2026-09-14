@@ -20,7 +20,7 @@
     "validate": "node scripts/validate-manifests.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.17.5",
+    "@modelcontextprotocol/sdk": "1.30.0",
     "zod": "3.25.76"
   },
   "devDependencies": {

@@ -2,7 +2,8 @@
   "$schema": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json",
   "event": {
     "id": "github-universe-2026",
-    "name": "GitHub Universe 2026"
+    "name": "GitHub Universe 2026",
+    "timezone": "America/Los_Angeles"
   },
   "date": "2026-10-28",
   "attendee": {

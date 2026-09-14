@@ -1,10 +1,12 @@
 const itineraryList = document.querySelector("#itinerary");
 const template = document.querySelector("#itinerary-item-template");
+let eventTimeZone = "America/Los_Angeles";
 
 function formatTime(value) {
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "2-digit",
+    timeZone: eventTimeZone,
   }).format(new Date(value));
 }
 
@@ -14,6 +16,19 @@ function formatDate(value) {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: eventTimeZone,
+  }).format(new Date(`${value}T12:00:00Z`));
+}
+
+function formatRetrievedAt(value) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: eventTimeZone,
+    timeZoneName: "short",
   }).format(new Date(value));
 }
 
@@ -21,16 +36,31 @@ function setText(selector, value) {
   document.querySelector(selector).textContent = value;
 }
 
+function safeHttpsUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 function renderValidation(validation) {
   const clearance = document.querySelector(".clearance");
   const valid = validation?.valid === true;
+  const errors = (validation?.errors ?? [])
+    .map(({ message }) => message)
+    .join(" ");
+  const breakCount = validation?.summary?.breakCount ?? 0;
   clearance.classList.add(valid ? "is-valid" : "is-invalid");
   setText("#validation-label", valid ? "Itinerary cleared" : "Review required");
   setText(
     "#validation-detail",
     valid
-      ? `${validation.summary.sessionCount} sourced sessions · ${validation.summary.breakCount} protected break`
-      : (validation?.errors ?? []).map(({ message }) => message).join(" "),
+      ? `${validation.summary.sessionCount} sourced sessions · ${breakCount} protected ${
+          breakCount === 1 ? "break" : "breaks"
+        }`
+      : errors || "The itinerary validator did not provide a reason.",
   );
 }
 
@@ -55,8 +85,9 @@ function renderItem(item, index) {
   fragment.querySelector(".location").textContent = item.room || "On your route";
 
   const sourceLink = fragment.querySelector(".source-link");
-  if (item.sourceUrl) {
-    sourceLink.href = item.sourceUrl;
+  const sourceUrl = safeHttpsUrl(item.sourceUrl);
+  if (sourceUrl) {
+    sourceLink.href = sourceUrl;
     fragment.querySelector(".source-id").textContent = item.id;
   } else {
     sourceLink.hidden = true;
@@ -90,22 +121,30 @@ async function loadItinerary() {
 
 try {
   const plan = await loadItinerary();
+  eventTimeZone = plan.event.timezone ?? eventTimeZone;
   setText("#event-date", `${formatDate(plan.date)} · ${plan.event.name}`);
   setText("#traveler", plan.attendee.name);
   setText("#focus", plan.attendee.interests.join(" · "));
+  const isFallback = plan.metadata.source !== "rainfocus-public-page";
   setText(
     "#source-status",
     plan.metadata.stale
       ? `${plan.metadata.source} stale fallback`
-      : plan.metadata.fallback
+      : isFallback
       ? `${plan.metadata.source} fallback`
       : `${plan.metadata.source} live`,
   );
   setText(
     "#retrieved-at",
-    `Source retrieved ${new Date(plan.metadata.retrievedAt).toLocaleString()}`,
+    `Source retrieved ${formatRetrievedAt(plan.metadata.retrievedAt)}`,
   );
-  document.querySelector("#catalog-link").href = plan.metadata.sourceUrl;
+  const catalogLink = document.querySelector("#catalog-link");
+  const catalogUrl = safeHttpsUrl(plan.metadata.sourceUrl);
+  if (catalogUrl) {
+    catalogLink.href = catalogUrl;
+  } else {
+    catalogLink.hidden = true;
+  }
 
   itineraryList.replaceChildren(
     ...plan.items.map((item, index) => renderItem(item, index)),
