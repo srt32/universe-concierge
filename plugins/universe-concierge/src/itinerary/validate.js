@@ -502,7 +502,8 @@ export function validateItineraryDocument(plan, options = {}) {
     );
   }
   if (
-    plan.items?.some((item) => item?.type === "session") &&
+    Array.isArray(plan.items) &&
+    plan.items.some((item) => item?.type === "session") &&
     !Array.isArray(options.catalogSessions)
   ) {
     documentErrors.push(

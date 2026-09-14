@@ -108,22 +108,8 @@ test("the file validator accepts a sourced plan with its requested break", async
 
 test("the file validator exits nonzero for overlapping sessions", async () => {
   const result = await run([
-    {
-      id: "session-1",
-      type: "session",
-      title: "A session",
-      start: "2026-10-29T09:00:00-07:00",
-      end: "2026-10-29T10:00:00-07:00",
-      ...source("session-1"),
-    },
-    {
-      id: "session-2",
-      type: "session",
-      title: "Another session",
-      start: "2026-10-29T09:30:00-07:00",
-      end: "2026-10-29T10:30:00-07:00",
-      ...source("session-2"),
-    },
+    canonicalSession("1777539050990001fp0w"),
+    canonicalSession("1784557963287001ooxL"),
   ]);
 
   assert.equal(result.status, 1);

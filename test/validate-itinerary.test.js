@@ -326,3 +326,12 @@ test("invalid event timezones return validation errors instead of throwing", () 
   assert.doesNotThrow(() => validateItineraryDocument(plan));
   assert.equal(validateItineraryDocument(plan).valid, false);
 });
+
+test("malformed item collections return validation errors instead of throwing", () => {
+  const plan = itineraryDocument({ items: {} });
+
+  assert.doesNotThrow(() => validateItineraryDocument(plan));
+  const result = validateItineraryDocument(plan);
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ message }) => message.startsWith("/items:")));
+});

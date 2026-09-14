@@ -2,7 +2,7 @@ import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, resolve, sep } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)), "dist");
 const host = "127.0.0.1";
@@ -15,14 +15,20 @@ const contentTypes = new Map([
   [".svg", "image/svg+xml"],
 ]);
 
-function localPath(requestUrl) {
-  const pathname = decodeURIComponent(new URL(requestUrl, `http://${host}`).pathname);
-  const requested = pathname.endsWith("/") ? `${pathname}index.html` : pathname;
-  const path = resolve(root, `.${requested}`);
-  if (path !== root && !path.startsWith(`${root}${sep}`)) {
+export function localPath(requestUrl) {
+  try {
+    const pathname = decodeURIComponent(
+      new URL(requestUrl, `http://${host}`).pathname,
+    );
+    const requested = pathname.endsWith("/") ? `${pathname}index.html` : pathname;
+    const path = resolve(root, `.${requested}`);
+    if (path !== root && !path.startsWith(`${root}${sep}`)) {
+      return null;
+    }
+    return path;
+  } catch {
     return null;
   }
-  return path;
 }
 
 const server = createServer(async (request, response) => {
@@ -53,6 +59,11 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, host, () => {
-  console.log(`Universe Concierge preview: http://${host}:${port}`);
-});
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  server.listen(port, host, () => {
+    console.log(`Universe Concierge preview: http://${host}:${port}`);
+  });
+}
