@@ -133,11 +133,15 @@ function validateCatalogSessions(items, catalogSessions, metadata, errors) {
       );
       continue;
     }
+    const displayMismatch = ["room", "format"].some(
+      (field) => item[field] !== undefined && item[field] !== canonical[field],
+    );
     if (
       item.title !== canonical.title ||
       item.start !== canonical.start ||
       item.end !== canonical.end ||
-      item.sourceUrl !== canonical.sourceUrl
+      item.sourceUrl !== canonical.sourceUrl ||
+      displayMismatch
     ) {
       errors.push(
         issue(
@@ -514,7 +518,10 @@ export function validateItineraryDocument(plan, options = {}) {
     catalogSessions: options.catalogSessions,
     catalogMetadata: options.catalogMetadata ?? plan.metadata,
     planDate: validCalendarDate(plan.date) ? plan.date : undefined,
-    timeZone: plan.event?.timezone,
+    timeZone:
+      plan.event?.timezone === EVENT_TIME_ZONE
+        ? plan.event.timezone
+        : EVENT_TIME_ZONE,
   });
   const validation = plan.validation;
   if (

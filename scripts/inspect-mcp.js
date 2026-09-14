@@ -1,5 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { pathToFileURL } from "node:url";
 
 const transport = new StdioClientTransport({
   command: process.execPath,
@@ -17,7 +18,16 @@ const client = new Client({
   version: "1.0.0",
 });
 
-function structured(result) {
+export function structured(result) {
+  if (result.isError) {
+    const error = result.structuredContent?.error;
+    if (error?.message) {
+      throw new Error(
+        `${error.code ? `${error.code}: ` : ""}${error.message}`,
+      );
+    }
+    throw new Error("The MCP tool returned an error without details.");
+  }
   if (result.structuredContent) {
     return result.structuredContent;
   }
@@ -85,9 +95,14 @@ async function inspect() {
   console.log(`Validation: ${validation.valid ? "valid" : "invalid"}`);
 }
 
-inspect()
-  .finally(() => client.close())
-  .catch((error) => {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-  });
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  inspect()
+    .finally(() => client.close())
+    .catch((error) => {
+      console.error(error instanceof Error ? error.message : String(error));
+      process.exitCode = 1;
+    });
+}

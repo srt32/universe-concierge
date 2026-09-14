@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   discoverCatalogConfiguration,
+  fetchResponse,
   normalizeRainFocusSession,
 } from "../plugins/universe-concierge/src/data/sources.js";
 
@@ -51,6 +52,26 @@ test("rejects a discovered RainFocus host outside the public allow-list", () => 
       }),
     /expected public events host/i,
   );
+});
+
+test("source fetches do not follow redirects", async () => {
+  const originalFetch = globalThis.fetch;
+  let redirect;
+  globalThis.fetch = async (_url, options) => {
+    redirect = options.redirect;
+    return new Response("{}", {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+
+  try {
+    await fetchResponse("https://events.githubuniverse.com/api/search", "test");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(redirect, "manual");
 });
 
 test("normalizes RainFocus local times, tracks, speakers, and canonical source", () => {

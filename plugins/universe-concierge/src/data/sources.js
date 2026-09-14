@@ -141,12 +141,13 @@ export function normalizeRainFocusSession(raw, configuration) {
   };
 }
 
-async function fetchResponse(url, source) {
+export async function fetchResponse(url, source) {
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
       "User-Agent": "srt32/universe-concierge",
     },
+    redirect: "manual",
     signal: AbortSignal.timeout(12_000),
   });
   if (!response.ok) {

@@ -287,3 +287,42 @@ test("requires a selected catalog to validate a sourced document", () => {
     result.errors.some(({ code }) => code === "catalog_verification_required"),
   );
 });
+
+test("rejects displayed session fields that differ from the selected catalog", () => {
+  const items = [
+    session({
+      room: "Invented room",
+      format: "Invented format",
+    }),
+  ];
+  const plan = itineraryDocument({
+    items,
+    requestedBreak: { start: "11:00", end: "11:30" },
+  });
+  const result = validateItineraryDocument(plan, {
+    catalogSessions: [
+      {
+        ...items[0],
+        room: "Canonical room",
+        format: "Breakout",
+      },
+    ],
+    catalogMetadata: plan.metadata,
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "session_mismatch"));
+});
+
+test("invalid event timezones return validation errors instead of throwing", () => {
+  const plan = itineraryDocument({
+    event: {
+      id: "github-universe-2026",
+      name: "GitHub Universe 2026",
+      timezone: "Mars/Phobos",
+    },
+  });
+
+  assert.doesNotThrow(() => validateItineraryDocument(plan));
+  assert.equal(validateItineraryDocument(plan).valid, false);
+});

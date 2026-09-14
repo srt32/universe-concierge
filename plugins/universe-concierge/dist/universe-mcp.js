@@ -21579,6 +21579,7 @@ async function fetchResponse(url, source) {
       Accept: "application/json",
       "User-Agent": "srt32/universe-concierge"
     },
+    redirect: "manual",
     signal: AbortSignal.timeout(12e3)
   });
   if (!response.ok) {
@@ -21925,7 +21926,10 @@ function validateCatalogSessions(items, catalogSessions, metadata, errors) {
       );
       continue;
     }
-    if (item.title !== canonical.title || item.start !== canonical.start || item.end !== canonical.end || item.sourceUrl !== canonical.sourceUrl) {
+    const displayMismatch = ["room", "format"].some(
+      (field) => item[field] !== void 0 && item[field] !== canonical[field]
+    );
+    if (item.title !== canonical.title || item.start !== canonical.start || item.end !== canonical.end || item.sourceUrl !== canonical.sourceUrl || displayMismatch) {
       errors.push(
         issue2(
           "session_mismatch",
@@ -22170,6 +22174,9 @@ var itineraryItemSchema = external_exports.object({
   title: external_exports.string(),
   start: external_exports.string(),
   end: external_exports.string(),
+  description: external_exports.string().optional(),
+  room: external_exports.string().optional(),
+  format: external_exports.string().optional(),
   source: external_exports.string().optional(),
   sourceUrl: external_exports.string().url().optional()
 });
