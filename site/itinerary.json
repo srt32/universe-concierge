@@ -1,0 +1,109 @@
+{
+  "$schema": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json",
+  "event": {
+    "id": "github-universe-2026",
+    "name": "GitHub Universe 2026"
+  },
+  "date": "2026-10-28",
+  "attendee": {
+    "name": "Agent builder",
+    "interests": ["Copilot", "agents", "developer productivity"]
+  },
+  "requestedBreak": {
+    "start": "12:10",
+    "end": "13:10"
+  },
+  "metadata": {
+    "source": "embedded-snapshot",
+    "sourceUrl": "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
+    "retrievedAt": "2026-09-14T17:00:00.000Z",
+    "fallback": true,
+    "snapshotGeneratedAt": "2026-09-14T17:00:00.000Z",
+    "snapshotAgeDays": 0,
+    "stale": false,
+    "failures": [
+      {
+        "source": "rainfocus-public-page",
+        "reason": "Demo artifact is pinned to the curated snapshot for deterministic rendering."
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "1786370222106001jLNQ",
+      "type": "session",
+      "title": "Opening Keynote",
+      "description": "Start with the announcements and live demos that frame the rest of Universe.",
+      "start": "2026-10-28T09:00:00-07:00",
+      "end": "2026-10-28T09:45:00-07:00",
+      "room": "Main Stage @ Festival Pavilion",
+      "format": "Keynote",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1786370222106001jLNQ"
+    },
+    {
+      "id": "transfer-gateway-pavilion",
+      "type": "travel",
+      "title": "Walk to Gateway Pavilion",
+      "note": "Use the buffer to orient yourself and reach the Level 2 demo area.",
+      "start": "2026-10-28T09:45:00-07:00",
+      "end": "2026-10-28T10:15:00-07:00",
+      "room": "Festival Pavilion → Gateway Pavilion"
+    },
+    {
+      "id": "1777471453036001p3c4",
+      "type": "session",
+      "title": "Shut the context window! You're letting the tokens out",
+      "description": "See how Copilot builds context, then carry those guardrails into the rest of the day.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T10:45:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777471453036001p3c4"
+    },
+    {
+      "id": "1777557576923001fNOZ",
+      "type": "session",
+      "title": "How GitHub taught Copilot to remember and when to forget",
+      "description": "Connect context-window tactics to GitHub's selective-memory research.",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T12:10:00-07:00",
+      "room": "BATS Theatre @ Fort Mason Building B, 3rd Floor",
+      "format": "Breakout",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777557576923001fNOZ"
+    },
+    {
+      "id": "break-lunch-reset",
+      "type": "break",
+      "title": "Lunch and a full reset",
+      "note": "A protected hour with no sessions, demos, or cross-campus transfers.",
+      "start": "2026-10-28T12:10:00-07:00",
+      "end": "2026-10-28T13:10:00-07:00",
+      "room": "Your choice"
+    },
+    {
+      "id": "1777703377246001DZjN",
+      "type": "session",
+      "title": "Agentic modernization of .NET and Java apps with GitHub Copilot",
+      "description": "Close the day with a compact, practical agentic modernization playbook.",
+      "start": "2026-10-28T15:45:00-07:00",
+      "end": "2026-10-28T16:00:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777703377246001DZjN"
+    }
+  ],
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "itemCount": 6,
+      "sessionCount": 4,
+      "breakCount": 1
+    }
+  }
+}

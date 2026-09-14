@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createUniverseTools } from "../src/tools.js";
+import { createUniverseTools } from "../plugins/universe-concierge/src/tools.js";
 
 const catalog = {
   event: {

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "matcher": "create|edit|str_replace_editor|apply_patch",
+        "bash": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
+        "powershell": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
+        "cwd": ".",
+        "env": {
+          "UNIVERSE_HOOK_EVENT": "postToolUse"
+        },
+        "timeoutSec": 10
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
+        "powershell": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
+        "cwd": ".",
+        "env": {
+          "UNIVERSE_HOOK_EVENT": "agentStop"
+        },
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

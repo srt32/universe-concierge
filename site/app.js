@@ -95,7 +95,9 @@ try {
   setText("#focus", plan.attendee.interests.join(" · "));
   setText(
     "#source-status",
-    plan.metadata.fallback
+    plan.metadata.stale
+      ? `${plan.metadata.source} stale fallback`
+      : plan.metadata.fallback
       ? `${plan.metadata.source} fallback`
       : `${plan.metadata.source} live`,
   );

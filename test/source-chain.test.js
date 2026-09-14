@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { loadSessionCatalog } from "../src/data/source-chain.js";
+import { loadSessionCatalog } from "../plugins/universe-concierge/src/data/source-chain.js";
 
 const catalog = {
   event: { id: "github-universe-2026", name: "GitHub Universe 2026" },

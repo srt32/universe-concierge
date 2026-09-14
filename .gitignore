@@ -1,0 +1,8 @@
+node_modules/
+dist/
+!plugins/universe-concierge/dist/
+!plugins/universe-concierge/dist/universe-mcp.js
+coverage/
+.DS_Store
+*.log
+.impeccable/hook.cache.json

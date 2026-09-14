@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": "session-alpha",
+      "type": "session",
+      "title": "First sourced session",
+      "start": "2026-10-28T10:00:00-07:00",
+      "end": "2026-10-28T11:00:00-07:00",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://github.com/srt32/universe-concierge"
+    },
+    {
+      "id": "session-beta",
+      "type": "session",
+      "title": "Overlapping sourced session",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:30:00-07:00",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://github.com/srt32/universe-concierge"
+    }
+  ]
+}

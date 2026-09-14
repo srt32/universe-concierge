@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json",
+  "title": "Universe Concierge itinerary",
+  "type": "object",
+  "required": [
+    "event",
+    "date",
+    "attendee",
+    "requestedBreak",
+    "metadata",
+    "items",
+    "validation"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "event": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "date": { "type": "string", "format": "date" },
+    "attendee": {
+      "type": "object",
+      "required": ["name", "interests"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "interests": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "requestedBreak": {
+      "type": "object",
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceUrl",
+        "retrievedAt",
+        "fallback"
+      ],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "sourceUrl": { "type": "string", "format": "uri" },
+        "retrievedAt": { "type": "string", "format": "date-time" },
+        "fallback": { "type": "boolean" },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "reason"],
+            "properties": {
+              "source": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" },
+      "minItems": 1
+    },
+    "validation": {
+      "type": "object",
+      "required": ["valid", "errors", "warnings", "summary"],
+      "properties": {
+        "valid": { "type": "boolean" },
+        "errors": { "type": "array" },
+        "warnings": { "type": "array" },
+        "summary": { "type": "object" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "type", "title", "start", "end"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["session", "break", "travel", "note"]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "note": { "type": "string" },
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" },
+        "room": { "type": "string" },
+        "format": { "type": "string" },
+        "source": { "type": "string" },
+        "sourceUrl": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

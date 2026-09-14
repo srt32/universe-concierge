@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { validateItinerary } from "../src/itinerary/validate.js";
+import { validateItinerary } from "../plugins/universe-concierge/src/itinerary/validate.js";
 
 const source = {
   source: "embedded-snapshot",
