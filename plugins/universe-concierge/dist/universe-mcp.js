@@ -22020,7 +22020,7 @@ function validateItinerary(items, options = {}) {
   for (const [index, item] of items.entries()) {
     const itemId = typeof item?.id === "string" ? item.id.trim() : "";
     const label = itemId || `item-${index + 1}`;
-    const type = item?.type ?? "session";
+    const type = item?.type;
     if (!["session", "break", "travel", "note"].includes(type)) {
       errors.push(
         issue2("invalid_item_type", `Item "${label}" has an unsupported type.`, [
@@ -22161,7 +22161,7 @@ function validateItinerary(items, options = {}) {
     warnings,
     summary: {
       itemCount: items.length,
-      sessionCount: items.filter((item) => (item?.type ?? "session") === "session").length,
+      sessionCount: items.filter((item) => item?.type === "session").length,
       breakCount: items.filter((item) => item?.type === "break").length
     }
   };

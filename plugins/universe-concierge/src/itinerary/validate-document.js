@@ -19,5 +19,6 @@ export async function validateItineraryDocumentAgainstCatalog(
   return validateItineraryDocument(plan, {
     catalogSessions: catalog.sessions,
     catalogMetadata: catalog.metadata,
+    catalogEvent: catalog.event,
   });
 }

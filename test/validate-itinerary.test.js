@@ -116,6 +116,15 @@ test("rejects sessions without canonical IDs and source metadata", () => {
   );
 });
 
+test("rejects itinerary items without an explicit type", () => {
+  const item = session();
+  delete item.type;
+  const result = validateItinerary([item]);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "invalid_item_type"));
+});
+
 test("rejects session sources whose canonical URL does not carry the session ID", () => {
   const result = validateItinerary([
     session({
@@ -334,4 +343,33 @@ test("malformed item collections return validation errors instead of throwing", 
   const result = validateItineraryDocument(plan);
   assert.equal(result.valid, false);
   assert.ok(result.errors.some(({ message }) => message.startsWith("/items:")));
+});
+
+test("rejects an itinerary date outside the selected event dates", () => {
+  const items = [
+    {
+      id: "break-only",
+      type: "break",
+      title: "Break",
+      start: "2026-10-30T12:00:00-07:00",
+      end: "2026-10-30T13:00:00-07:00",
+    },
+  ];
+  const plan = itineraryDocument({
+    date: "2026-10-30",
+    items,
+    validation: validateItinerary(items, {
+      requestedBreak: { start: "12:00", end: "13:00" },
+      planDate: "2026-10-30",
+      timeZone: "America/Los_Angeles",
+    }),
+  });
+  const result = validateItineraryDocument(plan, {
+    catalogSessions: [],
+    catalogMetadata: plan.metadata,
+    catalogEvent: { dates: ["2026-10-28", "2026-10-29"] },
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "invalid_event_date"));
 });

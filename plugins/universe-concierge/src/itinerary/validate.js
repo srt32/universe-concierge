@@ -248,7 +248,7 @@ export function validateItinerary(items, options = {}) {
   for (const [index, item] of items.entries()) {
     const itemId = typeof item?.id === "string" ? item.id.trim() : "";
     const label = itemId || `item-${index + 1}`;
-    const type = item?.type ?? "session";
+    const type = item?.type;
 
     if (!["session", "break", "travel", "note"].includes(type)) {
       errors.push(
@@ -404,8 +404,7 @@ export function validateItinerary(items, options = {}) {
     warnings,
     summary: {
       itemCount: items.length,
-      sessionCount: items.filter((item) => (item?.type ?? "session") === "session")
-        .length,
+      sessionCount: items.filter((item) => item?.type === "session").length,
       breakCount: items.filter((item) => item?.type === "break").length,
     },
   };
@@ -451,6 +450,18 @@ export function validateItineraryDocument(plan, options = {}) {
   if (!validCalendarDate(plan.date)) {
     documentErrors.push(
       documentIssue("/date", "a real YYYY-MM-DD calendar date is required."),
+    );
+  }
+  if (
+    validCalendarDate(plan.date) &&
+    Array.isArray(options.catalogEvent?.dates) &&
+    !options.catalogEvent.dates.includes(plan.date)
+  ) {
+    documentErrors.push(
+      issue(
+        "invalid_event_date",
+        `Itinerary date ${plan.date} is not one of the selected event dates.`,
+      ),
     );
   }
   if (
