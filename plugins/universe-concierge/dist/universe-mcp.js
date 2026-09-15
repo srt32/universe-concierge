@@ -22005,11 +22005,11 @@ function validateRequestedBreak(items, requestedBreak, errors, timeZone) {
     return;
   }
   const preservingBreak = items.some((item) => {
-    if (item.type !== "break") {
+    if (item?.type !== "break") {
       return false;
     }
-    const itemStart = validDate(item.start);
-    const itemEnd = validDate(item.end);
+    const itemStart = validDate(item?.start);
+    const itemEnd = validDate(item?.end);
     return itemStart !== null && itemEnd !== null && eventLocalMinute(itemStart, timeZone) <= start && eventLocalMinute(itemEnd, timeZone) >= end;
   });
   if (!preservingBreak) {
@@ -22042,6 +22042,15 @@ function validateItinerary(items, options = {}) {
         issue2("invalid_item_type", `Item "${label}" has an unsupported type.`, [
           label
         ])
+      );
+    }
+    if (type === "session" && item?.note !== void 0) {
+      errors.push(
+        issue2(
+          "session_note_not_allowed",
+          `Session "${label}" cannot include a free-form note.`,
+          [label]
+        )
       );
     }
     if (!hasText(item?.title)) {
@@ -22191,6 +22200,7 @@ var itineraryItemSchema = external_exports.object({
   start: external_exports.string(),
   end: external_exports.string(),
   description: external_exports.string().optional(),
+  note: external_exports.string().optional(),
   room: external_exports.string().optional(),
   format: external_exports.string().optional(),
   source: external_exports.string().optional(),

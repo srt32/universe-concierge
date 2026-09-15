@@ -378,6 +378,21 @@ test("malformed item collections return validation errors instead of throwing", 
   assert.ok(result.errors.some(({ message }) => message.startsWith("/items:")));
 });
 
+test("requested-break validation handles null items deterministically", () => {
+  assert.doesNotThrow(() =>
+    validateItinerary([null], {
+      requestedBreak: { start: "12:00", end: "13:00" },
+    }),
+  );
+  const result = validateItinerary([null], {
+    requestedBreak: { start: "12:00", end: "13:00" },
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "invalid_item_type"));
+  assert.ok(result.errors.some(({ code }) => code === "requested_break_missing"));
+});
+
 test("rejects an itinerary date outside the selected event dates", () => {
   const items = [
     {

@@ -285,11 +285,11 @@ function validateRequestedBreak(items, requestedBreak, errors, timeZone) {
   }
 
   const preservingBreak = items.some((item) => {
-    if (item.type !== "break") {
+    if (item?.type !== "break") {
       return false;
     }
-    const itemStart = validDate(item.start);
-    const itemEnd = validDate(item.end);
+    const itemStart = validDate(item?.start);
+    const itemEnd = validDate(item?.end);
     return (
       itemStart !== null &&
       itemEnd !== null &&
@@ -332,6 +332,15 @@ export function validateItinerary(items, options = {}) {
         issue("invalid_item_type", `Item "${label}" has an unsupported type.`, [
           label,
         ]),
+      );
+    }
+    if (type === "session" && item?.note !== undefined) {
+      errors.push(
+        issue(
+          "session_note_not_allowed",
+          `Session "${label}" cannot include a free-form note.`,
+          [label],
+        ),
       );
     }
     if (!hasText(item?.title)) {

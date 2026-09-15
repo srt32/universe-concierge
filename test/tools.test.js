@@ -105,6 +105,30 @@ test("validate_itinerary rejects sessions that are absent from the catalog", asy
   assert.equal(result.errors[0].code, "unknown_session");
 });
 
+test("validate_itinerary preserves and rejects free-form session notes", async () => {
+  const result = await tools.get("validate_itinerary").handler({
+    date: "2026-10-29",
+    items: [
+      {
+        id: "universe26-agentic-systems",
+        type: "session",
+        title: "Building agentic systems",
+        start: "2026-10-29T13:30:00-07:00",
+        end: "2026-10-29T14:00:00-07:00",
+        note: "PRIVATE-CONTENT-BYPASS",
+        source: "embedded-snapshot",
+        sourceUrl:
+          "https://events.githubuniverse.com/api/session?id=universe26-agentic-systems",
+      },
+    ],
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(({ code }) => code === "session_note_not_allowed"),
+  );
+});
+
 test("validate_itinerary rejects canonical sessions from another event day", async () => {
   const result = await tools.get("validate_itinerary").handler({
     date: "2026-10-28",

@@ -11,6 +11,7 @@ const itineraryItemSchema = z.object({
   start: z.string(),
   end: z.string(),
   description: z.string().optional(),
+  note: z.string().optional(),
   room: z.string().optional(),
   format: z.string().optional(),
   source: z.string().optional(),
