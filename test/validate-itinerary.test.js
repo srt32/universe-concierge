@@ -327,6 +327,35 @@ test("rejects displayed session fields that differ from the selected catalog", (
   assert.ok(result.errors.some(({ code }) => code === "session_mismatch"));
 });
 
+test("rejects a fabricated description on an opted-in canonical session", () => {
+  const items = [
+    session({
+      description: "Fabricated attendee-facing session description",
+    }),
+  ];
+  const plan = itineraryDocument({
+    attendee: { name: "Octo Builder", interests: ["Copilot"] },
+    publication: {
+      mode: "public-opt-in",
+      publicSharingConsent: true,
+    },
+    items,
+    requestedBreak: { start: "11:00", end: "11:30" },
+  });
+  const result = validateItineraryDocument(plan, {
+    catalogSessions: [
+      {
+        ...items[0],
+        description: "Canonical public session description",
+      },
+    ],
+    catalogMetadata: plan.metadata,
+  });
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "session_mismatch"));
+});
+
 test("invalid event timezones return validation errors instead of throwing", () => {
   const plan = itineraryDocument({
     event: {
@@ -524,6 +553,22 @@ test("rejects nested data in an opted-in item's text fields", () => {
     },
   });
   plan.items[0].description = { privateNote: "Mobility accommodation" };
+
+  const result = validateItineraryDocument(plan);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects a free-form note on an opted-in canonical session", () => {
+  const plan = itineraryDocument({
+    attendee: { name: "Octo Builder", interests: ["Copilot"] },
+    publication: {
+      mode: "public-opt-in",
+      publicSharingConsent: true,
+    },
+  });
+  plan.items[0].note = "PRIVATE-CONTENT-BYPASS";
 
   const result = validateItineraryDocument(plan);
 

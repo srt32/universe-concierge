@@ -184,7 +184,20 @@
           "pattern": "^https://"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "session" } },
+            "required": ["type"]
+          },
+          "then": {
+            "not": {
+              "required": ["note"]
+            }
+          }
+        }
+      ]
     }
   },
   "allOf": [

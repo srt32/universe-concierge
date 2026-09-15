@@ -101,7 +101,9 @@ function renderItem(item, index, hasPublicOptIn) {
         ? "Break"
         : "Travel buffer";
   fragment.querySelector(".strip-detail").textContent =
-    hasPublicOptIn ? item.description || item.note || "" : "";
+    hasPublicOptIn
+      ? item.description || (isSession ? "" : item.note) || ""
+      : "";
   fragment.querySelector(".location").textContent =
     (isSession || hasPublicOptIn) && item.room ? item.room : "On your route";
 

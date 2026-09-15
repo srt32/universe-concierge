@@ -21942,7 +21942,7 @@ function validateCatalogSessions(items, catalogSessions, metadata, errors) {
       );
       continue;
     }
-    const displayMismatch = ["room", "format"].some(
+    const displayMismatch = ["description", "room", "format"].some(
       (field) => item[field] !== void 0 && item[field] !== canonical[field]
     );
     if (item.title !== canonical.title || item.start !== canonical.start || item.end !== canonical.end || item.sourceUrl !== canonical.sourceUrl || displayMismatch) {

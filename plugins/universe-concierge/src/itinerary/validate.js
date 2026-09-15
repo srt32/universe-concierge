@@ -210,7 +210,7 @@ function validateCatalogSessions(items, catalogSessions, metadata, errors) {
       );
       continue;
     }
-    const displayMismatch = ["room", "format"].some(
+    const displayMismatch = ["description", "room", "format"].some(
       (field) => item[field] !== undefined && item[field] !== canonical[field],
     );
     if (
@@ -521,6 +521,7 @@ function publicItemHasKnownShape(item) {
     ["description", "note", "room", "format", "source"].every(
       (key) => item[key] === undefined || typeof item[key] === "string",
     ) &&
+    (item.type !== "session" || item.note === undefined) &&
     (item.sourceUrl === undefined || Boolean(validHttpsUrl(item.sourceUrl)))
   );
 }
