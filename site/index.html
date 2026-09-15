@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!--
+      THESIS: A personal conference day reads like an air-traffic strip board, not a dashboard of generic cards.
+      OWN-WORLD: Warm operations paper, carbon ink, runway teal, clearance yellow, and conflict red form a tactile strip system.
+      STORY: The attendee sees whether the plan is cleared, follows each timed movement, and can inspect the source behind every session.
+      FIRST VIEWPORT: A compact masthead and clearance status sit beside the first itinerary strips; the route begins immediately.
+      FORM: Flight-progress strips were the sixth grounded direction, staged as one unbroken time trace; seed b304877a.
+    -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A sourced, validated GitHub Universe itinerary planned by the Universe Concierge Copilot plugin."
+    />
+    <title>Universe Concierge — Flight plan</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#itinerary">Skip to itinerary</a>
+    <header class="masthead">
+      <a class="wordmark" href="https://github.com/srt32/universe-concierge">
+        <span aria-hidden="true">◆</span>
+        Universe Concierge
+      </a>
+      <p class="repo-mark">srt32/universe-concierge</p>
+    </header>
+
+    <main>
+      <section class="briefing" aria-labelledby="page-title">
+        <div>
+          <p class="date-line" id="event-date">Loading flight plan…</p>
+          <h1 id="page-title">Your Universe day,<br />cleared for takeoff.</h1>
+        </div>
+        <div class="clearance" aria-live="polite">
+          <span class="clearance-light" aria-hidden="true"></span>
+          <div>
+            <strong id="validation-label">Checking itinerary</strong>
+            <span id="validation-detail">The validator is reviewing every slot.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="route-board" aria-labelledby="route-title">
+        <header class="route-heading">
+          <h2 id="route-title">Flight plan</h2>
+          <dl class="route-facts">
+            <div>
+              <dt>Traveler</dt>
+              <dd id="traveler">Universe attendee</dd>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd id="focus">Loading preferences</dd>
+            </div>
+            <div>
+              <dt>Data</dt>
+              <dd id="source-status">Loading source</dd>
+            </div>
+            <div>
+              <dt>Privacy</dt>
+              <dd id="privacy-status">Anonymous public plan</dd>
+            </div>
+          </dl>
+        </header>
+
+        <ol class="itinerary" id="itinerary" aria-busy="true"></ol>
+      </section>
+
+      <section class="provenance" aria-labelledby="provenance-title">
+        <h2 id="provenance-title">Grounded, not guessed.</h2>
+        <p>
+          Every recommended session carries a canonical ID and public source.
+          The itinerary hook rejects conflicts before this page can call the day
+          clear.
+        </p>
+        <a id="catalog-link" href="https://githubuniverse.com/">
+          Inspect the public event source
+          <span aria-hidden="true">↗</span>
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <p>Planned with GitHub Copilot Agent Plugins 1.0.</p>
+      <p id="retrieved-at"></p>
+    </footer>
+
+    <template id="itinerary-item-template">
+      <li class="strip">
+        <div class="strip-time">
+          <time class="start"></time>
+          <span aria-hidden="true">—</span>
+          <time class="end"></time>
+        </div>
+        <div class="strip-main">
+          <p class="strip-kind"></p>
+          <h3></h3>
+          <p class="strip-detail"></p>
+        </div>
+        <div class="strip-meta">
+          <p class="location"></p>
+          <a class="source-link">
+            <span class="source-id"></span>
+            <span class="sr-only">View canonical source</span>
+          </a>
+        </div>
+      </li>
+    </template>
+  </body>
+</html>

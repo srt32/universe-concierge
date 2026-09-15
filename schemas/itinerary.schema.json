@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json",
+  "title": "Universe Concierge itinerary",
+  "type": "object",
+  "required": [
+    "event",
+    "date",
+    "attendee",
+    "publication",
+    "requestedBreak",
+    "metadata",
+    "items",
+    "validation"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json"
+    },
+    "event": {
+      "type": "object",
+      "required": ["id", "name", "timezone"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "timezone": { "const": "America/Los_Angeles" }
+      },
+      "additionalProperties": false
+    },
+    "date": { "type": "string", "format": "date" },
+    "attendee": {
+      "type": "object",
+      "required": ["name", "interests"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "interests": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "publication": {
+      "type": "object",
+      "required": ["mode", "publicSharingConsent"],
+      "properties": {
+        "mode": {
+          "enum": ["anonymous", "public-opt-in"]
+        },
+        "publicSharingConsent": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "requestedBreak": {
+      "type": "object",
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceUrl",
+        "retrievedAt",
+        "fallback"
+      ],
+      "properties": {
+        "source": {
+          "enum": [
+            "rainfocus-public-page",
+            "hosted-snapshot",
+            "embedded-snapshot"
+          ]
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "fallback": { "type": "boolean" },
+        "forced": { "type": "boolean" },
+        "snapshotGeneratedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "snapshotAgeDays": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": { "const": "rainfocus-public-page" }
+            },
+            "required": ["source"]
+          },
+          "then": {
+            "properties": {
+              "fallback": { "const": false }
+            }
+          },
+          "else": {
+            "properties": {
+              "fallback": { "const": true }
+            }
+          }
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" },
+      "minItems": 1
+    },
+    "validation": {
+      "type": "object",
+      "required": ["valid", "errors", "warnings", "summary"],
+      "properties": {
+        "valid": { "type": "boolean" },
+        "errors": { "type": "array", "maxItems": 0 },
+        "warnings": { "type": "array", "maxItems": 0 },
+        "summary": {
+          "type": "object",
+          "required": ["itemCount", "sessionCount", "breakCount"],
+          "properties": {
+            "itemCount": { "type": "integer", "minimum": 0 },
+            "sessionCount": { "type": "integer", "minimum": 0 },
+            "breakCount": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "type", "title", "start", "end"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["session", "break", "travel", "note"]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "note": { "type": "string" },
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "room": { "type": "string" },
+        "format": { "type": "string" },
+        "source": { "type": "string" },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "session" } },
+            "required": ["type"]
+          },
+          "then": {
+            "not": {
+              "required": ["note"]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "publication": {
+            "properties": { "mode": { "const": "anonymous" } },
+            "required": ["mode"]
+          }
+        },
+        "required": ["publication"]
+      },
+      "then": {
+        "properties": {
+          "publication": {
+            "properties": {
+              "publicSharingConsent": { "const": false }
+            }
+          },
+          "attendee": {
+            "properties": {
+              "name": { "const": "Universe attendee" },
+              "interests": {
+                "items": {
+                  "enum": [
+                    "AI",
+                    "Copilot",
+                    "DevOps",
+                    "GitHub",
+                    "agents",
+                    "context engineering",
+                    "developer experience",
+                    "developer productivity",
+                    "open source",
+                    "platform engineering",
+                    "security"
+                  ]
+                }
+              }
+            }
+          },
+          "items": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/item" },
+                {
+                  "not": {
+                    "anyOf": [
+                      { "required": ["description"] },
+                      { "required": ["note"] }
+                    ]
+                  }
+                },
+                {
+                  "not": {
+                    "properties": { "type": { "const": "note" } },
+                    "required": ["type"]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "const": "break" } },
+                    "required": ["type"]
+                  },
+                  "then": {
+                    "properties": {
+                      "id": { "pattern": "^break-[0-9]+$" },
+                      "title": { "const": "Break" }
+                    },
+                    "not": {
+                      "anyOf": [
+                        { "required": ["room"] },
+                        { "required": ["format"] },
+                        { "required": ["source"] },
+                        { "required": ["sourceUrl"] }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": { "type": { "const": "travel" } },
+                    "required": ["type"]
+                  },
+                  "then": {
+                    "properties": {
+                      "id": { "pattern": "^travel-[0-9]+$" },
+                      "title": { "const": "Travel buffer" }
+                    },
+                    "not": {
+                      "anyOf": [
+                        { "required": ["room"] },
+                        { "required": ["format"] },
+                        { "required": ["source"] },
+                        { "required": ["sourceUrl"] }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "validation": {
+            "properties": {
+              "valid": { "const": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "publication": {
+            "properties": { "mode": { "const": "public-opt-in" } },
+            "required": ["mode"]
+          }
+        },
+        "required": ["publication"]
+      },
+      "then": {
+        "properties": {
+          "publication": {
+            "properties": {
+              "publicSharingConsent": { "const": true }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

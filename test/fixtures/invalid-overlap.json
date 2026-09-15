@@ -1,0 +1,68 @@
+{
+  "event": {
+    "id": "github-universe-2026",
+    "name": "GitHub Universe 2026",
+    "timezone": "America/Los_Angeles"
+  },
+  "date": "2026-10-28",
+  "attendee": {
+    "name": "Universe attendee",
+    "interests": ["Copilot"]
+  },
+  "publication": {
+    "mode": "anonymous",
+    "publicSharingConsent": false
+  },
+  "requestedBreak": {
+    "start": "12:00",
+    "end": "13:00"
+  },
+  "metadata": {
+    "source": "embedded-snapshot",
+    "sourceUrl": "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
+    "retrievedAt": "2026-09-14T17:00:00.000Z",
+    "fallback": true
+  },
+  "items": [
+    {
+      "id": "1777539050990001fp0w",
+      "type": "session",
+      "title": "Agentic engineering past the pilot: An enterprise playbook",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:10:00-07:00",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777539050990001fp0w"
+    },
+    {
+      "id": "1784557963287001ooxL",
+      "type": "session",
+      "title": "How one open source project turned funding into security at scale",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:10:00-07:00",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1784557963287001ooxL"
+    },
+    {
+      "id": "break-lunch",
+      "type": "break",
+      "title": "Lunch break",
+      "start": "2026-10-28T12:00:00-07:00",
+      "end": "2026-10-28T13:00:00-07:00"
+    }
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      {
+        "code": "overlap",
+        "message": "The fixture intentionally contains overlapping sessions."
+      }
+    ],
+    "warnings": [],
+    "summary": {
+      "itemCount": 3,
+      "sessionCount": 2,
+      "breakCount": 1
+    }
+  }
+}

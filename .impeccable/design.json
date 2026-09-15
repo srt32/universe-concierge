@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-14T18:29:33Z",
+  "title": "Design System: Universe Concierge",
+  "extensions": {
+    "colorMeta": {
+      "operations-paper": {
+        "role": "neutral",
+        "displayName": "Operations Paper",
+        "tonalRamp": ["#25231f", "#4d4940", "#777165", "#a19a8d", "#c9c2b5", "#eee9dc", "#f5f1e7", "#fffdf6"]
+      },
+      "raised-paper": {
+        "role": "neutral",
+        "displayName": "Raised Paper",
+        "tonalRamp": ["#292823", "#54524a", "#7f7b70", "#aaa69a", "#d5d1c6", "#eeeae0", "#f8f5ec", "#fffdf6"]
+      },
+      "carbon-ink": {
+        "role": "neutral",
+        "displayName": "Carbon Ink",
+        "tonalRamp": ["#0b0f0d", "#18201d", "#35403b", "#59645e", "#818b85", "#abb3ae", "#d5dad7", "#f4f6f5"]
+      },
+      "pencil-muted": {
+        "role": "neutral",
+        "displayName": "Pencil Muted",
+        "tonalRamp": ["#111512", "#2d3531", "#59645e", "#747f79", "#96a09a", "#bbc2be", "#dde1df", "#f5f6f5"]
+      },
+      "rule-line": {
+        "role": "neutral",
+        "displayName": "Rule Line",
+        "tonalRamp": ["#181b19", "#383e3a", "#5b635e", "#7b847e", "#9ba39c", "#bec4bf", "#dfe2df", "#f6f7f6"]
+      },
+      "runway-teal": {
+        "role": "primary",
+        "displayName": "Runway Teal",
+        "tonalRamp": ["#002326", "#003c40", "#004c51", "#006b71", "#228c91", "#62afb2", "#a7d3d4", "#e5f5f5"]
+      },
+      "runway-teal-deep": {
+        "role": "primary",
+        "displayName": "Deep Runway Teal",
+        "tonalRamp": ["#001718", "#002e31", "#004c51", "#116a6f", "#438b8f", "#78adaf", "#afd0d1", "#e7f3f3"]
+      },
+      "clearance-yellow": {
+        "role": "secondary",
+        "displayName": "Clearance Yellow",
+        "tonalRamp": ["#2b2305", "#57470b", "#826b14", "#ad9024", "#d3b334", "#f7c948", "#fbe197", "#fff6d6"]
+      },
+      "conflict-red": {
+        "role": "secondary",
+        "displayName": "Conflict Red",
+        "tonalRamp": ["#2c0905", "#59160f", "#86251c", "#a83226", "#bf3d2f", "#d67569", "#e9afa8", "#f8e8e5"]
+      },
+      "board-gray": {
+        "role": "neutral",
+        "displayName": "Board Gray",
+        "tonalRamp": ["#24231f", "#4b4942", "#737067", "#9c988e", "#c1bdb2", "#d9d5c9", "#ece9df", "#faf8f2"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The page statement and major hierarchy."
+      },
+      "title": {
+        "displayName": "Strip Title",
+        "purpose": "Session, travel, and break titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable supporting rationale and provenance."
+      },
+      "data-label": {
+        "displayName": "Instrument Label",
+        "purpose": "Times, identifiers, types, and operational facts."
+      }
+    },
+    "shadows": [
+      {
+        "name": "board-lift",
+        "value": "0 14px 35px rgba(24, 32, 29, 0.12)",
+        "purpose": "Separates the complete route board from the operations paper."
+      },
+      {
+        "name": "strip-offset",
+        "value": "3px 5px 0 rgba(24, 32, 29, 0.12)",
+        "purpose": "Makes itinerary strips read as stacked paper."
+      },
+      {
+        "name": "status-peg",
+        "value": "2px 3px 0 rgba(24, 32, 29, 0.18)",
+        "purpose": "Gives the clearance light a tactile fixture."
+      }
+    ],
+    "motion": [
+      {
+        "name": "strip-arrival",
+        "value": "480ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Places strips onto the route board in sequence."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "760px"
+      },
+      {
+        "name": "narrow",
+        "value": "480px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Source Link",
+      "kind": "button",
+      "refersTo": "source-link",
+      "description": "Compact canonical-source ticket shown on sourced sessions.",
+      "html": "<a class=\"ds-source-link\" href=\"#\">1786370222106001jLNQ</a>",
+      "css": ".ds-source-link { display: inline-flex; align-items: center; min-height: 32px; padding: 0.4rem 0.55rem; background: #18201d; color: #fffdf6; font: 700 0.75rem/1.2 SFMono-Regular, Consolas, monospace; letter-spacing: 0.055em; text-decoration: none; text-transform: uppercase; } .ds-source-link:hover { background: #004c51; } .ds-source-link:focus-visible { outline: 3px solid #006b71; outline-offset: 4px; }"
+    },
+    {
+      "name": "Itinerary Strip",
+      "kind": "card",
+      "refersTo": "itinerary-strip",
+      "description": "The signature time, session, venue, and source row.",
+      "html": "<article class=\"ds-strip\"><time>9:00 AM</time><div><small>KEYNOTE</small><h3>Opening Keynote</h3><p>Announcements and live demos that frame the day.</p></div><strong>Main Stage</strong></article>",
+      "css": ".ds-strip { display: grid; grid-template-columns: 118px 1fr 150px; gap: 2rem; align-items: center; min-height: 112px; padding: 1.1rem 1.3rem; background: linear-gradient(90deg, #f7c948 0 8px, transparent 8px), #fffdf6; border: 1px solid #9c9a91; box-shadow: 3px 5px 0 rgba(24,32,29,.12); color: #18201d; font-family: Avenir, 'Segoe UI', sans-serif; } .ds-strip time, .ds-strip small { font-family: SFMono-Regular, Consolas, monospace; font-weight: 700; } .ds-strip h3, .ds-strip p { margin: 0; } .ds-strip h3 { font-family: 'Avenir Next Condensed', 'Arial Narrow', sans-serif; font-size: 1.5rem; line-height: 1.05; } .ds-strip p { margin-top: .45rem; color: #59645e; }"
+    },
+    {
+      "name": "Clearance Status",
+      "kind": "custom",
+      "description": "A text-backed signal showing whether the itinerary passed validation.",
+      "html": "<div class=\"ds-clearance\"><span aria-hidden=\"true\"></span><div><strong>Itinerary cleared</strong><small>4 sourced sessions · 1 protected break</small></div></div>",
+      "css": ".ds-clearance { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem 0; border-block: 1px solid #9ba39c; color: #18201d; font-family: Avenir, 'Segoe UI', sans-serif; } .ds-clearance > span { width: 18px; height: 18px; margin-top: .15rem; flex: 0 0 auto; background: #006b71; border: 1px solid #18201d; border-radius: 50%; box-shadow: 2px 3px 0 rgba(24,32,29,.18); } .ds-clearance strong, .ds-clearance small { display: block; } .ds-clearance strong { font-family: 'Avenir Next Condensed', 'Arial Narrow', sans-serif; font-size: 1.25rem; } .ds-clearance small { margin-top: .25rem; color: #59645e; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cleared Flight Board",
+    "overview": "Universe Concierge feels like an operations artifact prepared for one attendee, not a generic conference dashboard. Warm paper, carbon-dark type, compact data labels, and hard-edged flight strips make the itinerary feel physical, trustworthy, and ready to use in a bright venue.\n\nThe system balances expressive display type with disciplined information fields. It uses color sparingly to communicate clearance, provenance, movement, and conflict; it never substitutes decoration for status.",
+    "keyCharacteristics": [
+      "Tactile operations paper rather than glossy application chrome.",
+      "One strong time trace built from rectangular flight strips.",
+      "Condensed headlines paired with monospace labels for operational data.",
+      "Visible source identity, validation state, and venue information.",
+      "Responsive reflow that preserves scan order and readable fields."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Color Rule",
+        "body": "Teal, yellow, and red communicate route or validation meaning. Keep them rare enough that their status remains unmistakable.",
+        "section": "colors"
+      },
+      {
+        "name": "The Instrument Label Rule",
+        "body": "Monospace belongs to data and measurement, never to decorative body copy.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Board Rule",
+        "body": "Use ambient elevation for the route board, not for every piece of content.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep canonical IDs, venue, time, and source status visually findable.",
+      "Do reserve condensed type for hierarchy and monospace for operational data.",
+      "Do preserve square corners and one-pixel structural rules.",
+      "Do reflow data fields instead of clipping them on narrow screens."
+    ],
+    "donts": [
+      "Don't turn flight strips into rounded cards or add ornamental icons.",
+      "Don't use signal colors without a corresponding text label.",
+      "Don't imply live data when the source metadata reports a fallback.",
+      "Don't add decorative gradients, glass effects, or floating card stacks."
+    ]
+  }
+}

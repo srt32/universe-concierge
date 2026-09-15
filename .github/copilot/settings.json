@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "universe-demo": {
+      "source": {
+        "source": "github",
+        "repo": "srt32/universe-concierge"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "universe-concierge@universe-demo": true
+  }
+}

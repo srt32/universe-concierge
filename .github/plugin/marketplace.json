@@ -1,0 +1,26 @@
+{
+  "name": "universe-demo",
+  "owner": {
+    "name": "srt32"
+  },
+  "metadata": {
+    "description": "A same-repository marketplace for the Universe Concierge demo.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "universe-concierge",
+      "description": "Plan a sourced, conflict-free GitHub Universe itinerary and publish it to a tiny attendee site.",
+      "version": "1.0.0",
+      "source": "./plugins/universe-concierge",
+      "repository": "https://github.com/srt32/universe-concierge",
+      "license": "MIT",
+      "keywords": [
+        "github-universe",
+        "copilot",
+        "agent-plugins",
+        "itinerary"
+      ]
+    }
+  ]
+}

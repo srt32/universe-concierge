@@ -1,0 +1,100 @@
+{
+  "$schema": "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json",
+  "event": {
+    "id": "github-universe-2026",
+    "name": "GitHub Universe 2026",
+    "timezone": "America/Los_Angeles"
+  },
+  "date": "2026-10-28",
+  "attendee": {
+    "name": "Universe attendee",
+    "interests": ["Copilot", "agents", "developer productivity"]
+  },
+  "publication": {
+    "mode": "anonymous",
+    "publicSharingConsent": false
+  },
+  "requestedBreak": {
+    "start": "12:10",
+    "end": "13:10"
+  },
+  "metadata": {
+    "source": "embedded-snapshot",
+    "sourceUrl": "https://github.com/srt32/universe-concierge/blob/main/plugins/universe-concierge/data/sessions.json",
+    "retrievedAt": "2026-09-14T17:00:00.000Z",
+    "fallback": true,
+    "snapshotGeneratedAt": "2026-09-14T17:00:00.000Z",
+    "snapshotAgeDays": 0,
+    "stale": false
+  },
+  "items": [
+    {
+      "id": "1786370222106001jLNQ",
+      "type": "session",
+      "title": "Opening Keynote",
+      "start": "2026-10-28T09:00:00-07:00",
+      "end": "2026-10-28T09:45:00-07:00",
+      "room": "Main Stage @ Festival Pavilion",
+      "format": "Keynote",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1786370222106001jLNQ"
+    },
+    {
+      "id": "travel-1",
+      "type": "travel",
+      "title": "Travel buffer",
+      "start": "2026-10-28T09:45:00-07:00",
+      "end": "2026-10-28T10:15:00-07:00"
+    },
+    {
+      "id": "1777471453036001p3c4",
+      "type": "session",
+      "title": "Shut the context window! You're letting the tokens out",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T10:45:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777471453036001p3c4"
+    },
+    {
+      "id": "1777557576923001fNOZ",
+      "type": "session",
+      "title": "How GitHub taught Copilot to remember and when to forget",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T12:10:00-07:00",
+      "room": "BATS Theatre @ Fort Mason Building B, 3rd Floor",
+      "format": "Breakout",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777557576923001fNOZ"
+    },
+    {
+      "id": "break-1",
+      "type": "break",
+      "title": "Break",
+      "start": "2026-10-28T12:10:00-07:00",
+      "end": "2026-10-28T13:10:00-07:00"
+    },
+    {
+      "id": "1777703377246001DZjN",
+      "type": "session",
+      "title": "Agentic modernization of .NET and Java apps with GitHub Copilot",
+      "start": "2026-10-28T15:45:00-07:00",
+      "end": "2026-10-28T16:00:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "source": "embedded-snapshot",
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777703377246001DZjN"
+    }
+  ],
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "summary": {
+      "itemCount": 6,
+      "sessionCount": 4,
+      "breakCount": 1
+    }
+  }
+}

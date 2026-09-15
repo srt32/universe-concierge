@@ -1,0 +1,31 @@
+{
+  "name": "universe-concierge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A GitHub Copilot Agent Plugin for planning a validated GitHub Universe itinerary.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build:plugin && npm run build:site",
+    "build:plugin": "node scripts/build-plugin.js",
+    "build:site": "node scripts/build-site.js",
+    "check": "npm run test && npm run build && npm run validate",
+    "inspect:mcp": "node scripts/inspect-mcp.js",
+    "preview": "node scripts/preview-site.js",
+    "start": "node plugins/universe-concierge/src/server.js",
+    "test": "node --test",
+    "test:unit": "node --test test/source-chain.test.js test/validate-itinerary.test.js test/tools.test.js",
+    "validate": "node scripts/validate-manifests.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "esbuild": "0.28.2"
+  }
+}

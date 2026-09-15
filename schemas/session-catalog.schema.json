@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://srt32.github.io/universe-concierge/schemas/session-catalog.schema.json",
+  "title": "Universe Concierge session catalog",
+  "type": "object",
+  "required": ["generatedAt", "event", "sessions", "venueTips"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event": {
+      "type": "object",
+      "required": ["id", "name", "dates", "venue", "sourceUrl"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "dates": {
+          "type": "array",
+          "items": { "type": "string", "format": "date" },
+          "minItems": 1
+        },
+        "venue": { "type": "string", "minLength": 1 },
+        "sourceUrl": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": true
+    },
+    "sessions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/session" },
+      "minItems": 1
+    },
+    "venueTips": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "detail", "sourceUrl"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "detail": { "type": "string", "minLength": 1 },
+          "sourceUrl": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "speaker": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "session": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "start",
+        "end",
+        "room",
+        "format",
+        "topics",
+        "speakers",
+        "sourceUrl"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" },
+        "room": { "type": "string" },
+        "format": { "type": "string" },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "speakers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/speaker" }
+        },
+        "sourceUrl": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

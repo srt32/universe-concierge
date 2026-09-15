@@ -1,0 +1,248 @@
+{
+  "$schema": "https://srt32.github.io/universe-concierge/schemas/session-catalog.schema.json",
+  "generatedAt": "2026-09-14T17:00:00.000Z",
+  "event": {
+    "id": "github-universe-2026",
+    "name": "GitHub Universe 2026",
+    "dates": ["2026-10-28", "2026-10-29"],
+    "timezone": "America/Los_Angeles",
+    "venue": "Fort Mason Center, 2 Marina Blvd, San Francisco, CA 94123",
+    "sourceUrl": "https://githubuniverse.com/"
+  },
+  "sessions": [
+    {
+      "id": "1786370222106001jLNQ",
+      "title": "Opening Keynote",
+      "description": "GitHub's next era of software, with announcements, live demos, tools, and workflows.",
+      "start": "2026-10-28T09:00:00-07:00",
+      "end": "2026-10-28T09:45:00-07:00",
+      "room": "Main Stage @ Festival Pavilion",
+      "format": "Keynote",
+      "topics": [
+        "Build software, not code",
+        "Trust every commit",
+        "Lead through what's next"
+      ],
+      "speakers": [],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1786370222106001jLNQ"
+    },
+    {
+      "id": "1777539050990001fp0w",
+      "title": "Agentic engineering past the pilot: An enterprise playbook",
+      "description": "Enterprise patterns for moving agentic engineering from experiments to an operating model.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:10:00-07:00",
+      "room": "Cowell Theater @ Gateway Pavilion",
+      "format": "Breakout",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [
+        { "name": "Nick Liffen" },
+        { "name": "Philip Holleran" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777539050990001fp0w"
+    },
+    {
+      "id": "1784557963287001ooxL",
+      "title": "How one open source project turned funding into security at scale",
+      "description": "How the Secure Open Source Fund and ScanAPI converted funding, education, and Copilot into security outcomes.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:10:00-07:00",
+      "room": "BATS Theatre @ Fort Mason Building B, 3rd Floor",
+      "format": "Breakout",
+      "topics": ["Build software, not code", "Trust every commit"],
+      "speakers": [
+        { "name": "Gregg Cochran" },
+        { "name": "Camila Maia" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1784557963287001ooxL"
+    },
+    {
+      "id": "1777512208544001YnaL",
+      "title": "Securing MCP: Real exploits, what actually mitigates them, and what doesn't",
+      "description": "An interactive examination of MCP exploits, effective mitigations, production hosting, and remaining gaps.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T12:00:00-07:00",
+      "room": "Workshops @ Gateway Pavilion, Level 1",
+      "format": "Workshop",
+      "topics": ["Build software, not code", "Trust every commit"],
+      "speakers": [{ "name": "Sam Morrow" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777512208544001YnaL"
+    },
+    {
+      "id": "1777471453036001p3c4",
+      "title": "Shut the context window! You're letting the tokens out",
+      "description": "How Copilot constructs context and how to reduce token bloat with focused workflows and guardrails.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T10:45:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "topics": ["Build software, not code"],
+      "speakers": [{ "name": "Dylan McCarthy" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777471453036001p3c4"
+    },
+    {
+      "id": "1776460904386001a8nL",
+      "title": "Your benchmark is lying: What evals actually look like",
+      "description": "GitHub Copilot's production evaluation methods and a framework for creating outcome-oriented evals.",
+      "start": "2026-10-28T10:30:00-07:00",
+      "end": "2026-10-28T11:15:00-07:00",
+      "room": "Sandbox @ Fort Mason Building C, Founders Inc., 3rd Floor",
+      "format": "Sandbox",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [
+        { "name": "Walker Chabbott" },
+        { "name": "Julia Kasper" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1776460904386001a8nL"
+    },
+    {
+      "id": "1777612973921001XWna",
+      "title": "Stop malicious packages before they reach your build with GitHub Package Firewall",
+      "description": "A demonstration of screening upstream dependencies before malicious packages execute in CI/CD runners.",
+      "start": "2026-10-28T11:10:00-07:00",
+      "end": "2026-10-28T11:25:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "topics": ["Trust every commit"],
+      "speakers": [{ "name": "Eric Sorenson" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777612973921001XWna"
+    },
+    {
+      "id": "1782223817329001J5Je",
+      "title": "Building AI fluency at UPS",
+      "description": "UPS's progression from Copilot awareness to agent fluency, including motivation, measurement, and SDLC bottlenecks.",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T12:10:00-07:00",
+      "room": "Cowell Theater @ Gateway Pavilion",
+      "format": "Breakout",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [{ "name": "Jared Hatfield" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1782223817329001J5Je"
+    },
+    {
+      "id": "1785969390274001jXD8",
+      "title": "Four primitives to evaluate and improve your on-call agent's autonomy",
+      "description": "A model for on-call autonomy through triage, investigation, action, and learning.",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T11:45:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "topics": ["Lead through what's next"],
+      "speakers": [{ "name": "Steven Karis" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1785969390274001jXD8"
+    },
+    {
+      "id": "1777557576923001fNOZ",
+      "title": "How GitHub taught Copilot to remember and when to forget",
+      "description": "Research showing accumulated context can hurt agents, plus Skill Forge and Copilot REM selective-memory approaches.",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T12:10:00-07:00",
+      "room": "BATS Theatre @ Fort Mason Building B, 3rd Floor",
+      "format": "Breakout",
+      "topics": ["Build software, not code"],
+      "speakers": [
+        { "name": "Cooper Nederhood" },
+        { "name": "Alejandro Carderera" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777557576923001fNOZ"
+    },
+    {
+      "id": "1777614539199001PlmK",
+      "title": "I made my Octolamp think with GitHub Copilot CLI hooks",
+      "description": "Copilot CLI lifecycle hooks and WLED make an Octolamp display agent working, idle, and error states.",
+      "start": "2026-10-28T11:30:00-07:00",
+      "end": "2026-10-28T11:45:00-07:00",
+      "room": "Ship & Tell @ Firehouse",
+      "format": "Ship & Tell",
+      "topics": ["Build software, not code"],
+      "speakers": [{ "name": "Bea Mendez Gandica" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777614539199001PlmK"
+    },
+    {
+      "id": "1777564453594001wl51",
+      "title": "Real ways we cut token costs without slowing developers",
+      "description": "Practical reductions for bloated prompts, repeated context, and noisy CI workflows.",
+      "start": "2026-10-28T11:40:00-07:00",
+      "end": "2026-10-28T12:25:00-07:00",
+      "room": "Sandbox @ Fort Mason Building C, Founders Inc., 3rd Floor",
+      "format": "Sandbox",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [{ "name": "Vicky Israni" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777564453594001wl51"
+    },
+    {
+      "id": "1777703377246001DZjN",
+      "title": "Agentic modernization of .NET and Java apps with GitHub Copilot",
+      "description": "A playbook for analyzing, upgrading, securing, testing, and migrating .NET and Java applications.",
+      "start": "2026-10-28T15:45:00-07:00",
+      "end": "2026-10-28T16:00:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [{ "name": "Kaush Ganguly" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777703377246001DZjN"
+    },
+    {
+      "id": "1776715237637001kxeC",
+      "title": "Resolve your security alerts faster with GitHub Copilot",
+      "description": "A live demonstration of agentic autofix producing mergeable fixes for security-alert backlogs.",
+      "start": "2026-10-29T09:40:00-07:00",
+      "end": "2026-10-29T09:55:00-07:00",
+      "room": "Demos & Donuts @ Gateway Pavilion, Level 2",
+      "format": "Product Demo",
+      "topics": ["Build software, not code", "Trust every commit"],
+      "speakers": [
+        { "name": "Carlin Cherry" },
+        { "name": "Jon Janego" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1776715237637001kxeC"
+    },
+    {
+      "id": "1778094834694001VKKT",
+      "title": "AI, Actions, and tooling: Coinbase's move to GitHub with data residency",
+      "description": "Coinbase's migration of more than 10,000 repositories using Actions and an AI agent while maintaining regulated-data compliance.",
+      "start": "2026-10-29T11:00:00-07:00",
+      "end": "2026-10-29T11:40:00-07:00",
+      "room": "Cowell Theater @ Gateway Pavilion",
+      "format": "Breakout",
+      "topics": ["Build software, not code", "Lead through what's next"],
+      "speakers": [{ "name": "Steven Ewing" }],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1778094834694001VKKT"
+    },
+    {
+      "id": "1777576880526001AwEa",
+      "title": "People, process, and GitHub: Eliminating 90% of enterprise AppSec risk",
+      "description": "Manulife's communication, reporting, and GitHub-native controls for remediating more than 90% of its vulnerability backlog.",
+      "start": "2026-10-29T12:35:00-07:00",
+      "end": "2026-10-29T12:50:00-07:00",
+      "room": "Ship & Tell @ Firehouse",
+      "format": "Ship & Tell",
+      "topics": ["Trust every commit", "Lead through what's next"],
+      "speakers": [
+        { "name": "Monika Tamber" },
+        { "name": "Benedict Mak" }
+      ],
+      "sourceUrl": "https://events.githubuniverse.com/api/session?rfApiProfileId=TJRfOIsFkCN8hnKQS3oqHpRTCt7LQMuV&rfWidgetId=aJLK17fgPHkuE8mRdsuqFQ3yX59qro72&id=1777576880526001AwEa"
+    }
+  ],
+  "venueTips": [
+    {
+      "id": "fort-mason-address",
+      "title": "Start at Fort Mason Center",
+      "detail": "GitHub Universe 2026 is at Fort Mason Center, 2 Marina Blvd, San Francisco.",
+      "sourceUrl": "https://githubuniverse.com/"
+    },
+    {
+      "id": "allow-building-transfers",
+      "title": "Leave time between buildings",
+      "detail": "Sessions span Festival Pavilion, Gateway Pavilion, Buildings B and C, and the Firehouse. Keep transfer time in the itinerary.",
+      "sourceUrl": "https://reg.githubuniverse.com/flow/github/universe26/attendee-portal/page/sessioncatalog"
+    },
+    {
+      "id": "recheck-schedule",
+      "title": "Recheck the public catalog",
+      "detail": "Published times and rooms can change. Refresh the live catalog before relying on the plan onsite.",
+      "sourceUrl": "https://reg.githubuniverse.com/flow/github/universe26/attendee-portal/page/sessioncatalog"
+    }
+  ]
+}
