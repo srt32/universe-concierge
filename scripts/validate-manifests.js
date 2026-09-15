@@ -5,11 +5,16 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
+import { parseItineraryJson } from "../plugins/universe-concierge/src/itinerary/parse-json.js";
+
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const pluginRoot = resolve(root, "plugins", "universe-concierge");
 
 async function readJson(path) {
-  return JSON.parse(await readFile(resolve(root, path), "utf8"));
+  const text = await readFile(resolve(root, path), "utf8");
+  return path === "site/itinerary.json"
+    ? parseItineraryJson(text)
+    : JSON.parse(text);
 }
 
 function validateWithSchema(name, schema, value) {

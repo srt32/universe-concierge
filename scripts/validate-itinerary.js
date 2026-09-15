@@ -4,11 +4,12 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { validateItineraryDocumentAgainstCatalog } from "../plugins/universe-concierge/src/itinerary/validate-document.js";
+import { parseItineraryJson } from "../plugins/universe-concierge/src/itinerary/parse-json.js";
 
 const filePath = resolve(process.argv[2] ?? "site/itinerary.json");
 
 async function main() {
-  const plan = JSON.parse(await readFile(filePath, "utf8"));
+  const plan = parseItineraryJson(await readFile(filePath, "utf8"));
   const result = await validateItineraryDocumentAgainstCatalog(plan);
 
   if (!result.valid) {

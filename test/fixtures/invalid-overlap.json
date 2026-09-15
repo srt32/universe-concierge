@@ -6,8 +6,12 @@
   },
   "date": "2026-10-28",
   "attendee": {
-    "name": "Overlap test",
+    "name": "Universe attendee",
     "interests": ["Copilot"]
+  },
+  "publication": {
+    "mode": "anonymous",
+    "publicSharingConsent": false
   },
   "requestedBreak": {
     "start": "12:00",

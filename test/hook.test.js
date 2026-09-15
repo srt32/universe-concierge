@@ -48,7 +48,7 @@ function canonicalSession(id) {
   };
 }
 
-async function run(items, requestedBreak) {
+async function run(items, requestedBreak, overrides = {}) {
   const directory = await mkdtemp(join(tmpdir(), "universe-hook-"));
   const file = join(directory, "itinerary.json");
   const requiredBreak = requestedBreak ?? { start: "12:00", end: "13:00" };
@@ -61,7 +61,11 @@ async function run(items, requestedBreak) {
         timezone: "America/Los_Angeles",
       },
       date: items[0]?.start?.slice(0, 10) ?? "2026-10-28",
-      attendee: { name: "Agent builder", interests: ["Copilot"] },
+      attendee: { name: "Universe attendee", interests: ["Copilot"] },
+      publication: {
+        mode: "anonymous",
+        publicSharingConsent: false,
+      },
       requestedBreak: requiredBreak,
       metadata: {
         source: "embedded-snapshot",
@@ -72,6 +76,7 @@ async function run(items, requestedBreak) {
       },
       items,
       validation: validateItinerary(items, { requestedBreak: requiredBreak }),
+      ...overrides,
     }),
   );
   return spawnSync(process.execPath, [script.pathname, file], {
@@ -94,7 +99,7 @@ test("the file validator accepts a sourced plan with its requested break", async
       {
         id: "break-1",
         type: "break",
-        title: "Recharge",
+        title: "Break",
         start: "2026-10-28T12:00:00-07:00",
         end: "2026-10-28T13:00:00-07:00",
       },
@@ -104,6 +109,31 @@ test("the file validator accepts a sourced plan with its requested break", async
 
   assert.equal(result.status, 0);
   assert.equal(JSON.parse(result.stdout).valid, true);
+});
+
+test("the file validator rejects identifying text in anonymous output", async () => {
+  const result = await run(
+    [
+      canonicalSession("1786370222106001jLNQ"),
+      {
+        id: "break-1",
+        type: "break",
+        title: "Break",
+        start: "2026-10-28T12:00:00-07:00",
+        end: "2026-10-28T13:00:00-07:00",
+      },
+    ],
+    { start: "12:00", end: "13:00" },
+    {
+      attendee: {
+        name: "Universe attendee",
+        interests: ["alice@example.com"],
+      },
+    },
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /privacy_violation/);
 });
 
 test("the file validator exits nonzero for overlapping sessions", async () => {
@@ -199,6 +229,31 @@ test("the agent-stop hook blocks completion with an invalid itinerary", async ()
   assert.equal(result.status, 0);
   assert.equal(output.decision, "block");
   assert.match(output.reason, /rejected itinerary/i);
+});
+
+test("the agent-stop hook rejects duplicate JSON keys", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "universe-duplicate-hook-"));
+  const siteDirectory = join(directory, "site");
+  const itineraryPath = join(siteDirectory, "itinerary.json");
+  await mkdir(siteDirectory, { recursive: true });
+  await writeFile(
+    itineraryPath,
+    '{"attendee":{"name":"Alice"},"attendee":{"name":"Universe attendee"}}',
+  );
+
+  const result = spawnSync(process.execPath, [hookScript.pathname], {
+    cwd: directory,
+    env: {
+      ...process.env,
+      UNIVERSE_HOOK_EVENT: "agentStop",
+      UNIVERSE_ITINERARY_PATH: itineraryPath,
+    },
+    encoding: "utf8",
+  });
+  const output = JSON.parse(result.stdout);
+
+  assert.equal(output.decision, "block");
+  assert.match(output.reason, /Duplicate JSON key "attendee"/);
 });
 
 test("the agent-stop hook blocks a schema-incomplete itinerary", async () => {

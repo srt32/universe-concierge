@@ -17,7 +17,9 @@ Before selecting sessions, identify:
 - two to four interests or goals;
 - preferred session formats, if any;
 - accessibility, pacing, or walking constraints the attendee volunteers;
-- one requested break with explicit `HH:MM` start and end times.
+- one requested break with explicit `HH:MM` start and end times;
+- whether the attendee explicitly opted in to publishing identifying display
+  fields on the public microsite.
 
 Never request RainFocus credentials, attendee authentication, or personal agenda
 access. Use only the public data exposed by the `universe` MCP server.
@@ -35,14 +37,27 @@ access. Use only the public data exposed by the `universe` MCP server.
    must cover the full requested interval.
 6. Build items in chronological order. Every session item must copy its
    canonical `id`, `source`, and `sourceUrl` from MCP results.
-7. Call `validate_itinerary` with the event date, `America/Los_Angeles`
+7. Choose the publication contract. Unless the attendee explicitly requested a
+   public personalized microsite and agreed that the display label, interests,
+   and itinerary will be public, use `mode: "anonymous"`,
+   `publicSharingConsent: false`, and attendee name `Universe attendee`. Keep
+   anonymous interests to the schema's allow-listed topic labels. Copy only
+   canonical session fields. Represent breaks and travel as numeric `break-N`
+   and `travel-N` IDs with titles `Break` and `Travel buffer`; omit descriptions,
+   notes, rooms, and other free text. Never place private constraints or
+   identifying details in the public file. Omit `metadata.failures` and store
+   empty validation errors and warnings; report source failures in chat.
+8. Use `mode: "public-opt-in"` and `publicSharingConsent: true` only for that
+   explicit public-sharing request. Store only the attendee's chosen public
+   nickname in `attendee.name`; personalization alone does not imply consent.
+9. Call `validate_itinerary` with the event date, `America/Los_Angeles`
    timezone, complete item array, and requested break. Resolve every validation
    error before writing the file.
-8. Update only `site/itinerary.json` using
+10. Update only `site/itinerary.json` using
    `schemas/itinerary.schema.json`. Copy the validator result into the
    top-level `validation` field and the catalog source metadata into
    `metadata`.
-9. Summarize the choices, name any fallback source or stale snapshot explicitly,
+11. Summarize the choices, name any fallback source or stale snapshot explicitly,
    and tell the attendee that public schedules can change.
 
 ## Selection guidance
@@ -60,10 +75,10 @@ access. Use only the public data exposed by the `universe` MCP server.
 
 `site/itinerary.json` must include:
 
-- event identity, date, attendee label, and interests;
+- event identity, date, attendee label, and broad interests;
+- the explicit anonymous or public-opt-in `publication` contract;
 - `requestedBreak`;
-- source metadata including `source`, `sourceUrl`, `retrievedAt`, `fallback`,
-  and any `failures`;
+- source metadata including `source`, `sourceUrl`, `retrievedAt`, and `fallback`;
 - ordered itinerary items;
 - the exact result returned by `validate_itinerary`.
 

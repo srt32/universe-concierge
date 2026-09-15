@@ -1,6 +1,19 @@
 const itineraryList = document.querySelector("#itinerary");
 const template = document.querySelector("#itinerary-item-template");
 let eventTimeZone = "America/Los_Angeles";
+const anonymousInterests = new Set([
+  "AI",
+  "Copilot",
+  "DevOps",
+  "GitHub",
+  "agents",
+  "context engineering",
+  "developer experience",
+  "developer productivity",
+  "open source",
+  "platform engineering",
+  "security",
+]);
 
 function formatTime(value) {
   return new Intl.DateTimeFormat("en-US", {
@@ -64,7 +77,7 @@ function renderValidation(validation) {
   );
 }
 
-function renderItem(item, index) {
+function renderItem(item, index, hasPublicOptIn) {
   const fragment = template.content.cloneNode(true);
   const strip = fragment.querySelector(".strip");
   strip.dataset.type = item.type;
@@ -77,12 +90,20 @@ function renderItem(item, index) {
   end.dateTime = item.end;
   end.textContent = formatTime(item.end);
 
-  fragment.querySelector(".strip-kind").textContent =
-    item.type === "session" ? item.format || "Session" : item.type;
-  fragment.querySelector("h3").textContent = item.title;
+  const isSession = item.type === "session";
+  fragment.querySelector(".strip-kind").textContent = isSession
+    ? item.format || "Session"
+    : item.type;
+  fragment.querySelector("h3").textContent =
+    isSession || hasPublicOptIn
+      ? item.title
+      : item.type === "break"
+        ? "Break"
+        : "Travel buffer";
   fragment.querySelector(".strip-detail").textContent =
-    item.description || item.note || "";
-  fragment.querySelector(".location").textContent = item.room || "On your route";
+    hasPublicOptIn ? item.description || item.note || "" : "";
+  fragment.querySelector(".location").textContent =
+    (isSession || hasPublicOptIn) && item.room ? item.room : "On your route";
 
   const sourceLink = fragment.querySelector(".source-link");
   const sourceUrl = safeHttpsUrl(item.sourceUrl);
@@ -123,8 +144,20 @@ try {
   const plan = await loadItinerary();
   eventTimeZone = plan.event.timezone ?? eventTimeZone;
   setText("#event-date", `${formatDate(plan.date)} · ${plan.event.name}`);
-  setText("#traveler", plan.attendee.name);
-  setText("#focus", plan.attendee.interests.join(" · "));
+  const hasPublicOptIn =
+    plan.publication?.mode === "public-opt-in" &&
+    plan.publication?.publicSharingConsent === true;
+  setText("#traveler", hasPublicOptIn ? plan.attendee.name : "Universe attendee");
+  const displayedInterests = hasPublicOptIn
+    ? plan.attendee.interests
+    : plan.attendee.interests.filter((interest) =>
+        anonymousInterests.has(interest),
+      );
+  setText("#focus", displayedInterests.join(" · ") || "Technical sessions");
+  setText(
+    "#privacy-status",
+    hasPublicOptIn ? "Public sharing opted in" : "Anonymous public plan",
+  );
   const isFallback = plan.metadata.source !== "rainfocus-public-page";
   setText(
     "#source-status",
@@ -147,7 +180,9 @@ try {
   }
 
   itineraryList.replaceChildren(
-    ...plan.items.map((item, index) => renderItem(item, index)),
+    ...plan.items.map((item, index) =>
+      renderItem(item, index, hasPublicOptIn),
+    ),
   );
   itineraryList.setAttribute("aria-busy", "false");
   renderValidation(plan.validation);

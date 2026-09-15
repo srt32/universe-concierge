@@ -21817,6 +21817,22 @@ var RFC3339_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+
 var CANONICAL_SOURCE_HOST = "events.githubuniverse.com";
 var EVENT_TIME_ZONE = "America/Los_Angeles";
 var LIVE_SOURCE = "rainfocus-public-page";
+var ANONYMOUS_SESSION_KEYS = /* @__PURE__ */ new Set([
+  "id",
+  "type",
+  "title",
+  "start",
+  "end",
+  "room",
+  "format",
+  "source",
+  "sourceUrl"
+]);
+var PUBLIC_ITEM_KEYS = /* @__PURE__ */ new Set([
+  ...ANONYMOUS_SESSION_KEYS,
+  "description",
+  "note"
+]);
 var CANONICAL_SOURCES = /* @__PURE__ */ new Set([
   LIVE_SOURCE,
   "hosted-snapshot",
@@ -22202,6 +22218,16 @@ function tool(description, inputSchema, handler) {
   return { description, inputSchema, handler };
 }
 function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
+  let catalogPromise;
+  async function getCatalog() {
+    catalogPromise ??= Promise.resolve().then(() => loadCatalog());
+    try {
+      return await catalogPromise;
+    } catch (error2) {
+      catalogPromise = void 0;
+      throw error2;
+    }
+  }
   return /* @__PURE__ */ new Map([
     [
       "get_event_overview",
@@ -22209,7 +22235,7 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get public GitHub Universe event dates, venue, source freshness, and planning context.",
         {},
         async () => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return { event: catalog.event, metadata: catalog.metadata };
         }
       )
@@ -22224,7 +22250,7 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
           limit: external_exports.number().int().min(1).max(50).default(10)
         },
         async ({ query, day, limit = 10 }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           const sessions = catalog.sessions.filter((session) => includesQuery(session, query)).filter((session) => !day || session.start.startsWith(day)).slice(0, limit);
           return {
             query,
@@ -22241,7 +22267,7 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get one GitHub Universe session by its canonical public ID.",
         { id: external_exports.string().min(1).describe("Canonical session ID.") },
         async ({ id }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           const session = catalog.sessions.find((candidate) => candidate.id === id);
           if (!session) {
             throw new SessionNotFoundError(id);
@@ -22256,7 +22282,7 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get public, non-personal venue and attendee logistics tips for GitHub Universe.",
         {},
         async () => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return {
             venue: catalog.event.venue,
             tips: catalog.venueTips ?? [],
@@ -22276,7 +22302,7 @@ function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
           requestedBreak: requestedBreakSchema
         },
         async ({ date: date3, timezone = "America/Los_Angeles", items, requestedBreak }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return validateItinerary(items, {
             requestedBreak,
             catalogSessions: catalog.sessions,

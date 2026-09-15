@@ -172,12 +172,41 @@ Confirm the agent:
 - changes only `site/itinerary.json`;
 - preserves the requested break;
 - reports source, retrieval time, fallback state, and upstream failures.
+- writes anonymous publication fields unless the prompt explicitly opts into a
+  public personalized microsite.
 
 Then verify the written file:
 
 ```bash
 node scripts/validate-itinerary.js site/itinerary.json
 npm run build:site
+```
+
+Verify the privacy contract:
+
+```bash
+tmp="$(mktemp -d)"
+cp site/itinerary.json "$tmp/anonymous.json"
+node -e 'const fs=require("fs");const p=JSON.parse(fs.readFileSync(process.argv[1]));p.attendee.name="Octo Cat";fs.writeFileSync(process.argv[2],JSON.stringify(p,null,2))' site/itinerary.json "$tmp/no-consent.json"
+node scripts/validate-itinerary.js "$tmp/anonymous.json"
+! node scripts/validate-itinerary.js "$tmp/no-consent.json"
+node -e 'const fs=require("fs");const p=JSON.parse(fs.readFileSync(process.argv[1]));p.attendee.name="Octo Cat";p.publication={mode:"public-opt-in",publicSharingConsent:true};fs.writeFileSync(process.argv[2],JSON.stringify(p,null,2))' site/itinerary.json "$tmp/opted-in.json"
+node scripts/validate-itinerary.js "$tmp/opted-in.json"
+rm -rf "$tmp"
+```
+
+The second validation must fail with `privacy_violation`; the anonymous and
+explicitly opted-in plans must pass. Run the opt-in path only with a fictional
+demo identity unless a real attendee has explicitly agreed to public sharing.
+
+To verify the intended consumer-repository story in `srt32/my-universe`, use an
+explicit prompt such as:
+
+```text
+Create a shareable public Universe microsite for my public nickname "Octo
+Builder" and broad interests "Copilot" and "developer productivity". I
+explicitly opt in to publishing that nickname, those interests, and the planned
+itinerary. Do not include any other personal details.
 ```
 
 ### 6. Verify same-repository activation in Copilot cloud agent

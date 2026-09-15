@@ -47,6 +47,17 @@ function tool(description, inputSchema, handler) {
 }
 
 export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
+  let catalogPromise;
+  async function getCatalog() {
+    catalogPromise ??= Promise.resolve().then(() => loadCatalog());
+    try {
+      return await catalogPromise;
+    } catch (error) {
+      catalogPromise = undefined;
+      throw error;
+    }
+  }
+
   return new Map([
     [
       "get_event_overview",
@@ -54,7 +65,7 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get public GitHub Universe event dates, venue, source freshness, and planning context.",
         {},
         async () => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return { event: catalog.event, metadata: catalog.metadata };
         },
       ),
@@ -69,7 +80,7 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
           limit: z.number().int().min(1).max(50).default(10),
         },
         async ({ query, day, limit = 10 }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           const sessions = catalog.sessions
             .filter((session) => includesQuery(session, query))
             .filter((session) => !day || session.start.startsWith(day))
@@ -89,7 +100,7 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get one GitHub Universe session by its canonical public ID.",
         { id: z.string().min(1).describe("Canonical session ID.") },
         async ({ id }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           const session = catalog.sessions.find((candidate) => candidate.id === id);
           if (!session) {
             throw new SessionNotFoundError(id);
@@ -104,7 +115,7 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
         "Get public, non-personal venue and attendee logistics tips for GitHub Universe.",
         {},
         async () => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return {
             venue: catalog.event.venue,
             tips: catalog.venueTips ?? [],
@@ -124,7 +135,7 @@ export function createUniverseTools({ loadCatalog = loadSessionCatalog } = {}) {
           requestedBreak: requestedBreakSchema,
         },
         async ({ date, timezone = "America/Los_Angeles", items, requestedBreak }) => {
-          const catalog = await loadCatalog();
+          const catalog = await getCatalog();
           return validateItinerary(items, {
             requestedBreak,
             catalogSessions: catalog.sessions,

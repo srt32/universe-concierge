@@ -25,9 +25,9 @@ function itineraryDocument(overrides = {}) {
   const items = overrides.items ?? [
     session(),
     {
-      id: "break-lunch",
+      id: "break-1",
       type: "break",
-      title: "Lunch break",
+      title: "Break",
       start: "2026-10-29T12:00:00-07:00",
       end: "2026-10-29T13:00:00-07:00",
     },
@@ -44,8 +44,12 @@ function itineraryDocument(overrides = {}) {
     },
     date: "2026-10-29",
     attendee: {
-      name: "Agent builder",
+      name: "Universe attendee",
       interests: ["Copilot"],
+    },
+    publication: {
+      mode: "anonymous",
+      publicSharingConsent: false,
     },
     requestedBreak,
     metadata: {
@@ -372,4 +376,157 @@ test("rejects an itinerary date outside the selected event dates", () => {
 
   assert.equal(result.valid, false);
   assert.ok(result.errors.some(({ code }) => code === "invalid_event_date"));
+});
+
+for (const [field, value] of [
+  ["id", "another-event"],
+  ["name", "Another event"],
+  ["timezone", "UTC"],
+]) {
+  test(`rejects an event ${field} that differs from the selected catalog`, () => {
+    const plan = itineraryDocument({
+      event: {
+        id: "github-universe-2026",
+        name: "GitHub Universe 2026",
+        timezone: "America/Los_Angeles",
+        [field]: value,
+      },
+    });
+    const result = validateItineraryDocument(plan, {
+      catalogSessions: [],
+      catalogMetadata: plan.metadata,
+      catalogEvent: {
+        id: "github-universe-2026",
+        name: "GitHub Universe 2026",
+        timezone: "America/Los_Angeles",
+        dates: ["2026-10-28", "2026-10-29"],
+      },
+    });
+
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(({ code }) => code === "event_mismatch"));
+  });
+}
+
+test("defaults public output to an anonymous attendee", () => {
+  const result = validateItineraryDocument(
+    itineraryDocument({
+      attendee: { name: "Octo Cat", interests: ["Copilot"] },
+    }),
+  );
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("allows an identifying display label only with explicit public opt-in", () => {
+  const plan = itineraryDocument({
+    attendee: {
+      name: "Octo Cat",
+      interests: ["Copilot and Octo's team goals"],
+    },
+    publication: {
+      mode: "public-opt-in",
+      publicSharingConsent: true,
+    },
+  });
+  const result = validateItineraryDocument(plan);
+
+  assert.ok(
+    !result.errors.some(({ code }) => code === "privacy_violation"),
+  );
+});
+
+test("rejects public sharing without explicit consent", () => {
+  const result = validateItineraryDocument(
+    itineraryDocument({
+      attendee: { name: "Octo Cat", interests: ["Copilot"] },
+      publication: {
+        mode: "public-opt-in",
+        publicSharingConsent: false,
+      },
+    }),
+  );
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects identifying free text from an anonymous public plan", () => {
+  const result = validateItineraryDocument(
+    itineraryDocument({
+      attendee: {
+        name: "Universe attendee",
+        interests: ["alice@example.com"],
+      },
+      items: [
+        session({ description: "Meet Alice from Example Corp" }),
+        {
+          id: "break-alice",
+          type: "break",
+          title: "Alice's accessibility break",
+          start: "2026-10-29T12:00:00-07:00",
+          end: "2026-10-29T13:00:00-07:00",
+          note: "Mobility accommodation",
+        },
+      ],
+    }),
+  );
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects private fields anywhere in an anonymous public document", () => {
+  const plan = itineraryDocument();
+  plan.attendee.email = "alice@example.com";
+  plan.metadata.privateConstraints = "Mobility accommodation";
+  plan.validation.warnings = [{ message: "Meet Alice from Example Corp" }];
+
+  const result = validateItineraryDocument(plan);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects unknown fields from an opted-in public document", () => {
+  const plan = itineraryDocument({
+    attendee: { name: "Octo Cat", interests: ["Copilot"] },
+    publication: {
+      mode: "public-opt-in",
+      publicSharingConsent: true,
+    },
+  });
+  plan.attendee.email = "alice@example.com";
+
+  const result = validateItineraryDocument(plan);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects untyped optional metadata from a public document", () => {
+  const plan = itineraryDocument();
+  plan.metadata.snapshotGeneratedAt = "alice@example.com";
+
+  const result = validateItineraryDocument(plan);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
+});
+
+test("rejects nested data in an opted-in item's text fields", () => {
+  const plan = itineraryDocument({
+    attendee: { name: "Octo Cat", interests: ["Copilot"] },
+    publication: {
+      mode: "public-opt-in",
+      publicSharingConsent: true,
+    },
+  });
+  plan.items[0].description = { privateNote: "Mobility accommodation" };
+
+  const result = validateItineraryDocument(plan);
+
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some(({ code }) => code === "privacy_violation"));
 });

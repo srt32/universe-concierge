@@ -98,6 +98,21 @@ The implementation does not use attendee authentication, personal agendas, or
 secrets. It does not call the denied RainFocus session dump endpoint. See
 `docs/DATA_SOURCES.md` for the verified public boundary.
 
+`site/itinerary.json` is a public artifact. Generated plans are anonymous by
+default: the committed attendee label is `Universe attendee`, interests use a
+small allow-list of broad topic labels, and non-session items contain no
+free-form text. Optional metadata prose and validation messages are omitted from
+anonymous artifacts. A personalized display label is allowed only when the user
+explicitly requests a shareable public microsite and the file records
+`publication.mode: "public-opt-in"` with `publicSharingConsent: true`. The
+schema, build, hook, and browser renderer all enforce this contract. See
+`SECURITY.md` for the safe-publication boundary.
+
+For a consumer-repository demo such as `srt32/my-universe`, the attendee can
+explicitly opt in to a shareable microsite using a public nickname and broad
+interests. The opt-in is recorded in the JSON; the agent never treats ordinary
+personalization as publication consent.
+
 ## MCP tools
 
 | Tool | Result |

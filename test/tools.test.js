@@ -8,6 +8,7 @@ const catalog = {
     id: "github-universe-2026",
     name: "GitHub Universe 2026",
     dates: ["2026-10-28", "2026-10-29"],
+    timezone: "America/Los_Angeles",
     venue: "Fort Mason Center",
   },
   sessions: [
@@ -123,4 +124,22 @@ test("validate_itinerary rejects canonical sessions from another event day", asy
 
   assert.equal(result.valid, false);
   assert.ok(result.errors.some(({ code }) => code === "wrong_event_date"));
+});
+
+test("tool set reuses one catalog snapshot for a consistent planning run", async () => {
+  let loads = 0;
+  const cachedTools = createUniverseTools({
+    loadCatalog: async () => {
+      loads += 1;
+      return catalog;
+    },
+  });
+
+  await cachedTools.get("get_event_overview").handler({});
+  await cachedTools.get("search_sessions").handler({ query: "copilot" });
+  await cachedTools
+    .get("get_session")
+    .handler({ id: "universe26-agentic-systems" });
+
+  assert.equal(loads, 1);
 });

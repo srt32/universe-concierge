@@ -21,7 +21,7 @@
         "env": {
           "UNIVERSE_HOOK_EVENT": "postToolUse"
         },
-        "timeoutSec": 10
+        "timeoutSec": 45
       }
     ],
     "agentStop": [
@@ -33,7 +33,7 @@
         "env": {
           "UNIVERSE_HOOK_EVENT": "agentStop"
         },
-        "timeoutSec": 10
+        "timeoutSec": 45
       }
     ]
   }

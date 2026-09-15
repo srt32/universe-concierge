@@ -4,6 +4,83 @@ const RFC3339_PATTERN =
 const CANONICAL_SOURCE_HOST = "events.githubuniverse.com";
 const EVENT_TIME_ZONE = "America/Los_Angeles";
 const LIVE_SOURCE = "rainfocus-public-page";
+const ANONYMOUS_INTERESTS = new Set([
+  "AI",
+  "Copilot",
+  "DevOps",
+  "GitHub",
+  "agents",
+  "context engineering",
+  "developer experience",
+  "developer productivity",
+  "open source",
+  "platform engineering",
+  "security",
+]);
+const ANONYMOUS_SESSION_KEYS = new Set([
+  "id",
+  "type",
+  "title",
+  "start",
+  "end",
+  "room",
+  "format",
+  "source",
+  "sourceUrl",
+]);
+const PUBLIC_ITEM_KEYS = new Set([
+  ...ANONYMOUS_SESSION_KEYS,
+  "description",
+  "note",
+]);
+const ANONYMOUS_SCHEDULE_KEYS = new Set([
+  "id",
+  "type",
+  "title",
+  "start",
+  "end",
+]);
+const ANONYMOUS_TOP_LEVEL_KEYS = new Set([
+  "$schema",
+  "event",
+  "date",
+  "attendee",
+  "publication",
+  "requestedBreak",
+  "metadata",
+  "items",
+  "validation",
+]);
+const ANONYMOUS_EVENT_KEYS = new Set(["id", "name", "timezone"]);
+const ANONYMOUS_ATTENDEE_KEYS = new Set(["name", "interests"]);
+const ANONYMOUS_PUBLICATION_KEYS = new Set([
+  "mode",
+  "publicSharingConsent",
+]);
+const ANONYMOUS_BREAK_KEYS = new Set(["start", "end"]);
+const ANONYMOUS_METADATA_KEYS = new Set([
+  "source",
+  "sourceUrl",
+  "retrievedAt",
+  "fallback",
+  "forced",
+  "snapshotGeneratedAt",
+  "snapshotAgeDays",
+  "stale",
+]);
+const ANONYMOUS_VALIDATION_KEYS = new Set([
+  "valid",
+  "errors",
+  "warnings",
+  "summary",
+]);
+const ANONYMOUS_SUMMARY_KEYS = new Set([
+  "itemCount",
+  "sessionCount",
+  "breakCount",
+]);
+const ITINERARY_SCHEMA_URL =
+  "https://srt32.github.io/universe-concierge/schemas/itinerary.schema.json";
 const CANONICAL_SOURCES = new Set([
   LIVE_SOURCE,
   "hosted-snapshot",
@@ -414,6 +491,103 @@ function documentIssue(path, message) {
   return issue("invalid_document", `${path}: ${message}`);
 }
 
+function hasOnlyKeys(value, allowedKeys) {
+  return (
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).every((key) => allowedKeys.has(key))
+  );
+}
+
+function optionalMetadataIsValid(metadata) {
+  return (
+    (metadata?.forced === undefined || typeof metadata.forced === "boolean") &&
+    (metadata?.snapshotGeneratedAt === undefined ||
+      Boolean(validDate(metadata.snapshotGeneratedAt))) &&
+    (metadata?.snapshotAgeDays === undefined ||
+      (Number.isInteger(metadata.snapshotAgeDays) &&
+        metadata.snapshotAgeDays >= 0)) &&
+    (metadata?.stale === undefined || typeof metadata.stale === "boolean")
+  );
+}
+
+function publicItemHasKnownShape(item) {
+  return (
+    hasOnlyKeys(item, PUBLIC_ITEM_KEYS) &&
+    ["id", "type", "title", "start", "end"].every((key) =>
+      hasText(item[key]),
+    ) &&
+    ["description", "note", "room", "format", "source"].every(
+      (key) => item[key] === undefined || typeof item[key] === "string",
+    ) &&
+    (item.sourceUrl === undefined || Boolean(validHttpsUrl(item.sourceUrl)))
+  );
+}
+
+function publicationDocumentHasKnownShape(plan) {
+  const summary = plan.validation?.summary;
+  return (
+    hasOnlyKeys(plan, ANONYMOUS_TOP_LEVEL_KEYS) &&
+    (plan.$schema === undefined || plan.$schema === ITINERARY_SCHEMA_URL) &&
+    hasOnlyKeys(plan.event, ANONYMOUS_EVENT_KEYS) &&
+    hasOnlyKeys(plan.attendee, ANONYMOUS_ATTENDEE_KEYS) &&
+    hasOnlyKeys(plan.publication, ANONYMOUS_PUBLICATION_KEYS) &&
+    hasOnlyKeys(plan.requestedBreak, ANONYMOUS_BREAK_KEYS) &&
+    hasOnlyKeys(plan.metadata, ANONYMOUS_METADATA_KEYS) &&
+    optionalMetadataIsValid(plan.metadata) &&
+    hasOnlyKeys(plan.validation, ANONYMOUS_VALIDATION_KEYS) &&
+    hasOnlyKeys(summary, ANONYMOUS_SUMMARY_KEYS) &&
+    Number.isInteger(summary?.itemCount) &&
+    summary.itemCount >= 0 &&
+    Number.isInteger(summary?.sessionCount) &&
+    summary.sessionCount >= 0 &&
+    Number.isInteger(summary?.breakCount) &&
+    summary.breakCount >= 0 &&
+    Array.isArray(plan.validation?.errors) &&
+    Array.isArray(plan.validation?.warnings) &&
+    plan.validation.warnings.length === 0 &&
+    Array.isArray(plan.items) &&
+    plan.items.every(publicItemHasKnownShape)
+  );
+}
+
+function anonymousPublicationIsSafe(plan) {
+  if (
+    plan.attendee?.name !== "Universe attendee" ||
+    !Array.isArray(plan.attendee?.interests) ||
+    plan.attendee.interests.some(
+      (interest) => !ANONYMOUS_INTERESTS.has(interest),
+    )
+  ) {
+    return false;
+  }
+
+  return (
+    Array.isArray(plan.items) &&
+    plan.items.every((item) => {
+      if (item?.type === "session") {
+        return hasOnlyKeys(item, ANONYMOUS_SESSION_KEYS);
+      }
+      if (item?.type === "break") {
+        return (
+          hasOnlyKeys(item, ANONYMOUS_SCHEDULE_KEYS) &&
+          /^break-\d+$/.test(item.id) &&
+          item.title === "Break"
+        );
+      }
+      if (item?.type === "travel") {
+        return (
+          hasOnlyKeys(item, ANONYMOUS_SCHEDULE_KEYS) &&
+          /^travel-\d+$/.test(item.id) &&
+          item.title === "Travel buffer"
+        );
+      }
+      return false;
+    })
+  );
+}
+
 export function validateItineraryDocument(plan, options = {}) {
   const documentErrors = [];
   if (!plan || typeof plan !== "object" || Array.isArray(plan)) {
@@ -433,6 +607,19 @@ export function validateItineraryDocument(plan, options = {}) {
       documentIssue(
         "/event",
         `id, name, and timezone ${EVENT_TIME_ZONE} are required.`,
+      ),
+    );
+  }
+  if (
+    options.catalogEvent &&
+    (plan.event?.id !== options.catalogEvent.id ||
+      plan.event?.name !== options.catalogEvent.name ||
+      plan.event?.timezone !== options.catalogEvent.timezone)
+  ) {
+    documentErrors.push(
+      issue(
+        "event_mismatch",
+        "Itinerary event id, name, and timezone must match the selected catalog event.",
       ),
     );
   }
@@ -474,6 +661,46 @@ export function validateItineraryDocument(plan, options = {}) {
       documentIssue(
         "/attendee",
         "a name and at least one non-empty interest are required.",
+      ),
+    );
+  }
+  const publication = plan.publication;
+  if (
+    !publication ||
+    !["anonymous", "public-opt-in"].includes(publication.mode) ||
+    typeof publication.publicSharingConsent !== "boolean"
+  ) {
+    documentErrors.push(
+      documentIssue(
+        "/publication",
+        "mode and publicSharingConsent are required.",
+      ),
+    );
+  } else if (!publicationDocumentHasKnownShape(plan)) {
+    documentErrors.push(
+      issue(
+        "privacy_violation",
+        "Published itineraries may contain only the schema-defined public fields and typed source metadata.",
+      ),
+    );
+  } else if (
+    publication.mode === "anonymous" &&
+    (publication.publicSharingConsent || !anonymousPublicationIsSafe(plan))
+  ) {
+    documentErrors.push(
+      issue(
+        "privacy_violation",
+        "Anonymous publication requires the safe public projection: a generic attendee, allow-listed broad interests, canonical session fields, and generic break/travel items without free text.",
+      ),
+    );
+  } else if (
+    publication.mode === "public-opt-in" &&
+    publication.publicSharingConsent !== true
+  ) {
+    documentErrors.push(
+      issue(
+        "privacy_violation",
+        "Public identifying display fields require explicit public-sharing consent.",
       ),
     );
   }
