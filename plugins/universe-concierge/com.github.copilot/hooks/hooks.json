@@ -23,18 +23,6 @@
         },
         "timeoutSec": 45
       }
-    ],
-    "agentStop": [
-      {
-        "type": "command",
-        "bash": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
-        "powershell": "node \"${PLUGIN_ROOT}/com.github.copilot/hooks/validate-itinerary-hook.js\"",
-        "cwd": ".",
-        "env": {
-          "UNIVERSE_HOOK_EVENT": "agentStop"
-        },
-        "timeoutSec": 45
-      }
     ]
   }
 }

@@ -34,8 +34,8 @@ npm test
 
 The suite covers source ordering and forced fallback, RainFocus normalization,
 all MCP tool handlers, itinerary invariants, MCP trust labeling, the CLI
-validator, pre-tool write-scope enforcement, post-tool rejection, and agent-stop
-blocking.
+validator, pre-tool write-scope enforcement, post-tool rejection, and stale
+agent-stop compatibility.
 
 Run only the core contract tests:
 
@@ -256,7 +256,10 @@ Expected:
 - the pre-tool hook allows `site/itinerary.json` and denies other write targets;
 - the post-tool hook exits `0` with a `modifiedResult.resultType` of `failure`;
 - the failure tells the agent which items overlap;
-- the agent-stop hook returns `{"decision":"block", ...}`;
+- the manifest does not register an agent-stop hook globally;
+- the compatibility handler ignores a missing implicit itinerary in an
+  unrelated worktree, but explicit missing paths and malformed itinerary files
+  remain actionable failures;
 - full-document validation also rejects out-of-order or cross-day items,
   non-HTTPS source URLs, source mismatches, fallback data labeled live, and
   breaks that do not cover the requested event-local time.
@@ -364,17 +367,20 @@ not require Playwright.
 
 ### Copilot uses a cached plugin
 
-Rebuild and reinstall:
+Marketplace-installed plugins require a catalog refresh and plugin update:
 
 ```bash
 npm run build
-copilot plugin uninstall universe-concierge
-copilot plugin install universe-concierge@universe-demo
+copilot plugin marketplace update universe-demo
+copilot plugin update universe-concierge@universe-demo
 copilot plugin list
 ```
 
-Restart the interactive CLI, then check `/plugin list`, `/skills list`, and
-`/mcp` again. To bypass marketplace caching during development, launch with:
+Path-sourced plugins from a local marketplace load directly from their source
+directory and do not need `plugin update`. Hook registrations are loaded when a
+session starts, so use `/restart` or start a new session after changing
+`hooks.json`. Then check `/plugin list`, `/skills list`, and `/mcp` again. To
+bypass marketplace caching during development, launch with:
 
 ```bash
 copilot --plugin-dir ./plugins/universe-concierge
@@ -389,4 +395,5 @@ node scripts/validate-itinerary.js site/itinerary.json
 ```
 
 Fix the named error. The hook intentionally emits one JSON object and exits
-zero so Copilot processes the replacement failure or agent-stop block.
+zero so Copilot processes the replacement failure. Direct agent-stop
+invocations block only when a configured or present itinerary is invalid.
