@@ -33,9 +33,10 @@ manager lifecycle.
 A fail-closed pre-tool hook permits file-writing tools only when every target
 resolves to `site/itinerary.json`. The post-tool hook then validates the
 itinerary and replaces an invalid edit's successful result with a failure,
-which routes the agent back into repair. The plugin does not register a global
-agent-stop hook because plugin hooks can run outside the concierge agent's
-itinerary task.
+which routes the agent back into repair. An agent-stop hook blocks completion
+while a present or explicitly configured itinerary is invalid. A missing
+implicit itinerary is a no-op so unrelated worktrees are not treated as
+concierge tasks.
 
 The validator enforces:
 

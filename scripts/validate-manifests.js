@@ -80,8 +80,8 @@ async function validateAgentPluginFiles() {
     "The post-tool hook must match the documented file-writing tools.",
   );
   assert(
-    hooks.hooks?.agentStop === undefined,
-    "The plugin must not register an agent-stop hook outside itinerary tasks.",
+    hooks.hooks?.agentStop?.length === 1,
+    "The hook must block agent completion while an itinerary is invalid.",
   );
   for (const tool of [
     "universe/get_event_overview",

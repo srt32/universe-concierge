@@ -52,8 +52,8 @@ node scripts/validate-itinerary.js test/fixtures/invalid-overlap.json
 ```
 
 The second command intentionally exits nonzero. Explain why post-tool hooks
-replace a result rather than undoing an edit, routing the agent back into repair
-without applying itinerary validation to unrelated sessions.
+replace a result rather than undoing an edit, and why agent-stop supplies the
+completion gate only when an itinerary is present or explicitly configured.
 
 ## 11:00–14:00 — Reveal the attendee site
 

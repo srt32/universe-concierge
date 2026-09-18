@@ -248,7 +248,7 @@ test("the agent-stop hook blocks an explicitly configured missing itinerary", as
   assert.match(output.reason, /ENOENT/);
 });
 
-test("the agent-stop hook rejects malformed JSON at the default itinerary path", async () => {
+test("the agent-stop hook rejects duplicate JSON keys at the default itinerary path", async () => {
   const directory = await mkdtemp(join(tmpdir(), "universe-duplicate-hook-"));
   const siteDirectory = join(directory, "site");
   const itineraryPath = join(siteDirectory, "itinerary.json");
