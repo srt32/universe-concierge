@@ -19,7 +19,7 @@ real break, validate the plan, and render the result as an attendee flight plan.
 | Custom agent | Defines the concierge role and an explicit tool allow-list | `plugins/universe-concierge/com.github.copilot/agents/` |
 | Skill | Owns the repeatable planning procedure | `plugins/universe-concierge/skills/plan-universe-day/` |
 | MCP server | Exposes read-only event, session, venue, and validation tools | `plugins/universe-concierge/mcp.json` |
-| Hook | Restricts writes to the itinerary, rejects invalid edits, and blocks completion while it is invalid | `plugins/universe-concierge/com.github.copilot/hooks/` |
+| Hook | Restricts writes to the itinerary and rejects invalid edits | `plugins/universe-concierge/com.github.copilot/hooks/` |
 | Marketplace | Publishes the plugin from this repository | `.github/plugin/marketplace.json` |
 | Repository activation | Enables the same-repository marketplace for Copilot cloud agent | `.github/copilot/settings.json` |
 | Demo site | Renders `site/itinerary.json` as an accessible flight-strip board | `site/` |
@@ -73,14 +73,12 @@ site. Use public sources only and tell me if the data is a fallback.
 
 The agent updates only `site/itinerary.json`. A fail-closed pre-tool hook denies
 other write targets, the post-tool hook turns an invalid itinerary edit into a
-failed tool result, and the agent-stop hook prevents completion while a present
-or explicitly configured itinerary is invalid. A missing implicit itinerary is
-ignored so the plugin does not block unrelated worktrees. The guarantee rejects
-overlaps, missing canonical IDs or sources, missing requested breaks,
-out-of-order or cross-day items, non-HTTPS source links, mismatched source
-metadata, and snapshot data labeled as live. Breaks are evaluated in the event
-timezone. Public catalog text is labeled as untrusted data so session content
-cannot redefine the agent's instructions.
+failed tool result so the agent repairs it. The guarantee rejects overlaps,
+missing canonical IDs or sources, missing requested breaks, out-of-order or
+cross-day items, non-HTTPS source links, mismatched source metadata, and snapshot
+data labeled as live. Breaks are evaluated in the event timezone. Public catalog
+text is labeled as untrusted data so session content cannot redefine the
+agent's instructions.
 
 ## Public data with explicit fallback
 

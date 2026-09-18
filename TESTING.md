@@ -34,8 +34,8 @@ npm test
 
 The suite covers source ordering and forced fallback, RainFocus normalization,
 all MCP tool handlers, itinerary invariants, MCP trust labeling, the CLI
-validator, pre-tool write-scope enforcement, post-tool rejection, and scoped
-agent-stop blocking.
+validator, pre-tool write-scope enforcement, post-tool rejection, and stale
+agent-stop compatibility.
 
 Run only the core contract tests:
 
@@ -256,9 +256,10 @@ Expected:
 - the pre-tool hook allows `site/itinerary.json` and denies other write targets;
 - the post-tool hook exits `0` with a `modifiedResult.resultType` of `failure`;
 - the failure tells the agent which items overlap;
-- the agent-stop hook ignores a missing implicit itinerary in an unrelated
-  worktree, but explicit missing paths and invalid itinerary files remain
-  actionable failures;
+- the manifest does not register an agent-stop hook globally;
+- the compatibility handler ignores a missing implicit itinerary in an
+  unrelated worktree, but explicit missing paths and invalid itinerary files
+  remain actionable failures;
 - full-document validation also rejects out-of-order or cross-day items,
   non-HTTPS source URLs, source mismatches, fallback data labeled live, and
   breaks that do not cover the requested event-local time.
