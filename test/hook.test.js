@@ -212,7 +212,23 @@ test("the post-tool hook replaces an invalid edit result with a failure", async 
   assert.match(output.modifiedResult.error, /overlap/i);
 });
 
-test("the agent-stop hook blocks completion with an invalid itinerary", async () => {
+test("the agent-stop hook ignores a missing default itinerary in an unrelated worktree", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "unrelated-worktree-"));
+  const env = { ...process.env, UNIVERSE_HOOK_EVENT: "agentStop" };
+  delete env.UNIVERSE_ITINERARY_PATH;
+
+  const result = spawnSync(process.execPath, [hookScript.pathname], {
+    cwd: directory,
+    env,
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout, "");
+  assert.equal(result.stderr, "");
+});
+
+test("the agent-stop hook blocks an explicitly configured missing itinerary", async () => {
   const directory = await mkdtemp(join(tmpdir(), "universe-stop-hook-"));
   const missingPath = join(directory, "site", "itinerary.json");
   const result = spawnSync(process.execPath, [hookScript.pathname], {
@@ -229,9 +245,10 @@ test("the agent-stop hook blocks completion with an invalid itinerary", async ()
   assert.equal(result.status, 0);
   assert.equal(output.decision, "block");
   assert.match(output.reason, /rejected itinerary/i);
+  assert.match(output.reason, /ENOENT/);
 });
 
-test("the agent-stop hook rejects duplicate JSON keys", async () => {
+test("the agent-stop hook rejects duplicate JSON keys at the default itinerary path", async () => {
   const directory = await mkdtemp(join(tmpdir(), "universe-duplicate-hook-"));
   const siteDirectory = join(directory, "site");
   const itineraryPath = join(siteDirectory, "itinerary.json");
@@ -246,7 +263,6 @@ test("the agent-stop hook rejects duplicate JSON keys", async () => {
     env: {
       ...process.env,
       UNIVERSE_HOOK_EVENT: "agentStop",
-      UNIVERSE_ITINERARY_PATH: itineraryPath,
     },
     encoding: "utf8",
   });
