@@ -6,8 +6,9 @@ import { resolve } from "node:path";
 import { validateItineraryDocumentAgainstCatalog } from "../../src/itinerary/validate-document.js";
 import { parseItineraryJson } from "../../src/itinerary/parse-json.js";
 
+const configuredItineraryPath = process.env.UNIVERSE_ITINERARY_PATH;
 const itineraryPath = resolve(
-  process.env.UNIVERSE_ITINERARY_PATH ?? "site/itinerary.json",
+  configuredItineraryPath ?? "site/itinerary.json",
 );
 const event = process.env.UNIVERSE_HOOK_EVENT ?? "postToolUse";
 
@@ -38,6 +39,16 @@ async function validationFailure() {
     }
     return null;
   } catch (error) {
+    if (
+      event === "agentStop" &&
+      configuredItineraryPath === undefined &&
+      error !== null &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return null;
+    }
     return `Rejected itinerary: ${error instanceof Error ? error.message : String(error)}`;
   }
 }

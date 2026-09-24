@@ -80,8 +80,8 @@ async function validateAgentPluginFiles() {
     "The post-tool hook must match the documented file-writing tools.",
   );
   assert(
-    hooks.hooks?.agentStop?.length === 1,
-    "The hook must block agent completion while an itinerary is invalid.",
+    hooks.hooks?.agentStop === undefined,
+    "The plugin must not register an agent-stop hook outside itinerary tasks.",
   );
   for (const tool of [
     "universe/get_event_overview",
@@ -109,9 +109,10 @@ async function validateAgentPluginFiles() {
 }
 
 async function validateMarketplace() {
-  const [marketplace, settings] = await Promise.all([
+  const [marketplace, settings, pluginManifest] = await Promise.all([
     readJson(".github/plugin/marketplace.json"),
     readJson(".github/copilot/settings.json"),
+    readJson("plugins/universe-concierge/plugin.json"),
   ]);
   assert(
     marketplace.name === "universe-demo",
@@ -122,6 +123,11 @@ async function validateMarketplace() {
     ({ name }) => name === "universe-concierge",
   );
   assert(plugin, "Marketplace must publish universe-concierge.");
+  assert(
+    plugin.version === pluginManifest.version &&
+      marketplace.metadata?.version === pluginManifest.version,
+    "Marketplace and plugin versions must stay aligned.",
+  );
   assert(
     plugin.source === "./plugins/universe-concierge",
     "Marketplace plugin source must point at ./plugins/universe-concierge.",
